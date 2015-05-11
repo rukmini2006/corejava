@@ -1,4 +1,4 @@
-package helloworlddir;
+
 
 import java.util.Scanner;
 
@@ -12,10 +12,10 @@ public class MultiplicationTableFor5 {
 		int fact=1;
 		for(int i=0;i<=12;i++){
 			fact=number*i;
-			System.out.println(+number +" * " + i  +"=" +fact);
+			System.out.println(+number +" * " + i  +" = " +fact);
 			}
 		
-		
+		sc.close();
 
 	}
 
