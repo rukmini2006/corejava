@@ -9,8 +9,8 @@ public class PrintingName {
 
 		String fn=args[0];
 		String ln=args[1];
-		System.out.println(fn);
-		System.out.println(ln);
+		System.out.print(fn);
+		System.out.print(" " +ln);
 	}
 
 }
