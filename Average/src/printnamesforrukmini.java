@@ -7,7 +7,7 @@ public class printnamesforrukmini {
 			}catch(Exception e){
 				System.out.println(e);
 			}
-			System.out.println(name);
+			System.out.println("name");
 
 	}
 
