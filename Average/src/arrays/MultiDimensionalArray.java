@@ -13,6 +13,15 @@ public class MultiDimensionalArray {
 			}
 			System.out.println();
 		}
+		System.out.println("\n ");
+		System.out.println("Using Enhanced For Loop================ ");
+		
+		for(int [] i : persons){
+			for(int s : i){
+			System.out.print(s + "\t");
+			}
+			System.out.println();
+		}
 
 	}
 
