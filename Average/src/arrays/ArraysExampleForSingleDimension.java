@@ -21,10 +21,10 @@ public class ArraysExampleForSingleDimension {
 
 			String names[] = { "one", "two", "three" };
 
-			System.out.println("Normal for loop ");
-			for (int i = 0; i < names.length; i++)
-				System.out.println("elements are : " + names[i]);
-			System.out.println("\n============== ");
+//			System.out.println("Normal for loop ");
+//			for (int i = 0; i < names.length; i++)
+//				System.out.println("elements are : " + names[i]);
+//			System.out.println("\n============== ");
 
 			System.out.println("Enhanced for loop ");
 			for (String str : names)
