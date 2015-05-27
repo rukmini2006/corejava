@@ -7,7 +7,8 @@ public class Testing {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-
+//		Testing test = new Testing();
+//         test.callMe();
 	}
 	/**
 	 * This method is created to be called
