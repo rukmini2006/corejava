@@ -1,5 +1,9 @@
 package arrays;
-
+/**
+ * This is  an array example
+ * @author rukmini.mortha
+ *
+ */
 public class ArraysExample {
 
 	public static void oneDimen() {
