@@ -12,7 +12,7 @@ public class School {
 
 	public static void main(String[] args) {
 		Student studOne = new Student();
-		studOne.name = "Jayram";
+		studOne.name = "Jayram1";
 		studOne.grade = 3;
 		
 		Student studTwo = new Student();

@@ -13,7 +13,7 @@ public class Testing {
 	/**
 	 * This method is created to be called
 	 */
-public void callMe(){
+public void callMeFirst(){
 	
 }
 }
