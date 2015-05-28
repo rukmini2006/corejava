@@ -12,7 +12,11 @@ public class School {
 		st1.grade = 2;
 		st1.height = 5;
 		
-		
+		Teacher t2 = new Teacher();
+		t2.setSalary(10000);
+		t2.setName("baba");
+		System.out.println(t2.getName());
+		System.out.println(t2.getSalary());
 
 	}
 
