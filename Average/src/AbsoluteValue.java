@@ -1,4 +1,8 @@
-
+/**
+ * This is absolute value program
+ * @author rukmini.mortha
+ *
+ */
 public class AbsoluteValue {
 
 	public static void main(String[] args) {
