@@ -11,7 +11,7 @@ public class ArraysExample {
 	 * This is a one Dimension Array
 	 */
 	public static void oneDimenArray() {
-		int age1 = 10;
+		int age1 = 100;
 		int age2 = 20;
 		int age3 = 30;
 		
