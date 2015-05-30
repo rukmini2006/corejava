@@ -1,5 +1,4 @@
-package jrout.tutorial.classes;
-
+package rukmini.tut.classes;
 /**
  * This is a school Object
  * @author Jayram

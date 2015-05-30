@@ -1,23 +1,47 @@
 package rukmini.tut.classes;
 
-import rukmini.tutur.classes.Teacher;
+class Teacher{
 
+}
+/**
+ * This is a school Object
+ * @author Jayram
+ *
+ */
 public class School {
 
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		Student st1 =  new Student();
-		st1.name = "Rukmini";
-		st1.rollNo = 1;
-		st1.grade = 2;
-		st1.height = 5;
+		/*Student studOne = new Student();
+		studOne.name = "Jayram";
+		studOne.grade = 3;
 		
-		Teacher t2 = new Teacher();
-		t2.setSalary(10000);
-		t2.setName("baba");
-		System.out.println(t2.getName());
-		System.out.println(t2.getSalary());
-
+		Student studTwo = new Student();
+		studTwo.name = "Agni";
+		studTwo.grade = 4;
+		
+		System.out.println(studOne.name);
+		System.out.println(studTwo.name);
+	
+		studOne.name = "Girish";
+		
+		System.out.println(studOne.name);*/
+		
+		
+		
+		/*Student studThree = new Student("Girish");
+		studThree.grade = 5;
+		
+		System.out.println(studThree.name);
+		
+		studThree.name = "Nuzhat";
+		
+		System.out.println(studThree.name);
+		
+		Student stud = studThree;
+		
+		stud.name = "New Name";
+		
+		System.out.println(studThree.name);
+		System.out.println(stud.name);*/
 	}
-
 }
