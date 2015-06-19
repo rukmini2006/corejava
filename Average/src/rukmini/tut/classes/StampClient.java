@@ -1,4 +1,4 @@
-package jrout.tutorial.classes;
+package rukmini.tut.classes;
 
 class Stamp {
 	String name;
