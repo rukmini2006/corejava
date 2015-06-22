@@ -6,6 +6,12 @@ public class Student {
 	int height;
 	int grade;
 	
+	
+	@Override
+	public String toString() {
+		return "Student [name=" + name + ", rollNumber=" + rollNumber
+				+ ", height=" + height + ", grade=" + grade + "]";
+	}
 	public String getName(){
 		return name;
 		
