@@ -1,11 +1,15 @@
 package rukmini.tut.classes;
 
 public class Student {
-	String name;
-	int rollNumber;
+	private String name;
+	private int rollNumber;
 	int height;
 	int grade;
 	
+	public String getName(){
+		return name;
+		
+	}
 	public Student(String name, int rollNumber) {
 		this.name = name;
 		this.rollNumber = rollNumber;
@@ -27,5 +31,17 @@ public class Student {
 		name = assignedName;
 		rollNumber = assignRollNumber;
 		grade = assignGrade;
+	}
+	public void printStudentInfo(){
+		System.out.println( getInfo());
+	}
+	
+	public void printStudentInfo(String message){
+		System.out.println(message +" " + getInfo());
+	}
+	
+	private  String getInfo() {
+		return this.name +" "+this.rollNumber + " "+grade +" "+height;
+		
 	}
 }

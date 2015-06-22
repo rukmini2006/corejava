@@ -1,5 +1,4 @@
 package rukmini.tut.classes;
-
 class Stamp {
 	String name;
 	int stampSize;

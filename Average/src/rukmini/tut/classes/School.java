@@ -43,5 +43,14 @@ public class School {
 		
 		System.out.println(studThree.name);
 		System.out.println(stud.name);*/
+		
+		Student studOne = new Student("Rukmini",3);
+		studOne.printStudentInfo();
+		
+		studOne.printStudentInfo("Hello");
+		studOne.printStudentInfo("bye");
+		System.out.println(studOne.getName());
+		
+		
 	}
 }
