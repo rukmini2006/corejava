@@ -4,8 +4,14 @@ public class Student {
 	private String name;
 	private int rollNumber;
 	private int height;
-	public int grade;
+	private int grade;
+	 public static int count;
 	
+	 
+	    static void sayHello(){
+	System.out.println("Hello ");
+		
+	 }
 	
 	public int getRollNumber() {
 		return rollNumber;
