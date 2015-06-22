@@ -5,7 +5,17 @@ public class Student {
 	private int rollNumber;
 	private int height;
 	private int grade;
-	 public static int count;
+	private String teacher;
+	
+	 public String getTeacher() {
+		return teacher;
+	}
+
+	public void setTeacher(String teacher) {
+		this.teacher = teacher;
+	}
+
+	public static int count;
 	
 	 
 	    static void sayHello(){
