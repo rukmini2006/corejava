@@ -3,9 +3,29 @@ package rukmini.tut.classes;
 public class Student {
 	private String name;
 	private int rollNumber;
-	int height;
-	int grade;
+	private int height;
+	public int grade;
 	
+	
+	public int getRollNumber() {
+		return rollNumber;
+	}
+	
+	public int getHeight() {
+		return height;
+	}
+	public void setHeight(int height) {
+		if(height <=0)
+			this.height = 2;
+		else
+					this.height = height;
+	}
+	public int getGrade() {
+		return grade;
+	}
+	public void setGrade(int grade) {
+		this.grade = grade;
+	}
 	
 	@Override
 	public String toString() {
