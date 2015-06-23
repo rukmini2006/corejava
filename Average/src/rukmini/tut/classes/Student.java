@@ -55,6 +55,7 @@ public class Student {
 	public Student(String name, int rollNumber) {
 		this.name = name;
 		this.rollNumber = rollNumber;
+		count++;
 	}
 	
 	public Student(String assignedName, int assignRollNumber, int assignGrade) {
