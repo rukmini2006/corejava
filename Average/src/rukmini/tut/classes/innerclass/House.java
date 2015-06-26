@@ -2,7 +2,7 @@ package rukmini.tut.classes.innerclass;
 
 public class House {
 	
-	String name = " ";
+	String name = "y ";
 	
      class HousePainter{
     	 public void painter() {
