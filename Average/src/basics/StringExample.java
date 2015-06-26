@@ -1,5 +1,7 @@
 package basics;
 
+import rukmini.tut.classes.Student;
+
 public class StringExample {
 
 	public static void main(String[] args) {
@@ -40,6 +42,22 @@ public class StringExample {
 		//myFirstName = myFirstName+" mortyha";
 		myFirstName = myFirstName.concat(" mortha");
 		System.out.println(myFirstName);
+		
+		
+		
+		StringBuffer sbuf = new StringBuffer();
+		
+		
+		String [] names = {"1","2","3"};
+	//	StringBuffer  finalName =new StringBuffer();
+		StringBuilder  finalName= new StringBuilder();
+		for(String na : names){
+			finalName.append(na);
+			
+		}
+		System.out.println(finalName);
+		
+		
 
 	}
 
