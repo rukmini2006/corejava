@@ -12,6 +12,9 @@ public class InnerClassExample {
 		
 		HousePainter hp = house.new HousePainter();
 		HousePainter hp1 = new House().new HousePainter();
+		
+		System.out.println(hp);
+		System.out.println(hp1);
 
 	}
 
