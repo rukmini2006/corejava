@@ -31,6 +31,10 @@ public class H2kEmployee {
 		this.workDetails = workDetails;
 	}
 	
+	public String tieColor(){
+		return "tie color is blue";
+		
+	}
 
 	
 }

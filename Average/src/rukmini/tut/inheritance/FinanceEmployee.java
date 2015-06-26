@@ -15,6 +15,16 @@ public class FinanceEmployee extends H2kEmployee {
 		this.tax = tax;
 	}
 	
+	@Override
+	public String getWorkDetails() {
+		return "working hours for FinanceEmployee is 12hrs";
+	}
+	@Override
+	public String tieColor(){
+		return "tie color is purple";
+		
+	}
+	
 	
 
 	
