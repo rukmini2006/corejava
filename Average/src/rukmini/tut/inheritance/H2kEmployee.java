@@ -31,12 +31,13 @@ public abstract class H2kEmployee  {
 		this.workDetails = workDetails;
 	}
 	
-	public String tieColor(){
-		return "tie color is blue";
-		
-	}
+	public abstract String tieColor();
 	
 	public abstract void vehicle();
+	
+	public void lunchTime(){
+		System.out.println("Lunch time is  at 12:30p.m ");
+	}
 	
 @Override
 public String toString() {

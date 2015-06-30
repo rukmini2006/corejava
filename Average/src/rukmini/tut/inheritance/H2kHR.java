@@ -1,5 +1,8 @@
 package rukmini.tut.inheritance;
 
+import rukmini.tut.inheritance.itemp.ITEmployee;
+import rukmini.tut.inheritance.itemp.JavaEmp;
+
 public class H2kHR {
 
 	public static void main(String[] args) {
@@ -11,7 +14,7 @@ public class H2kHR {
 		System.out.println(fe.getWorkDetails());
 		System.out.println(fe.tieColor());
 
-		ITEmployee it = new ITEmployee(45,"prakash");
+		ITEmployee it = new JavaEmp(45,"prakash");
 		System.out.println(it.getWorkDetails());
 		System.out.println(it.getName());
 		System.out.println(it.tieColor());
@@ -30,14 +33,14 @@ public class H2kHR {
 		
 		H2kEmployee emp = new FinanceEmployee(65,"prakash");
 		emp.getEmpId();
-		emp.getTax();
+	//	emp.getTax();
 		
 		FinanceEmployee fEmp = new FinanceEmployee(32, "baba");
 		printInformation(fEmp);
-		ITEmployee itEmp = new ITEmployee(333, "siri");
+		ITEmployee itEmp = new JavaEmp(333, "siri");
 		printInformation(itEmp);
 		
-		H2kEmployee emp =new ITEmployee(344, "ffff");
+		 emp =new JavaEmp(344, "ffff");
 		
 		
 	}

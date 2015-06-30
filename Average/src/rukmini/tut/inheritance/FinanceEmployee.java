@@ -30,6 +30,11 @@ public class FinanceEmployee extends H2kEmployee {
 		System.out.println("BMW");
 		
 	}
+	@Override
+	public void lunchTime() {
+		// TODO Auto-generated method stub
+		System.out.println("Lunch time is 12:00 p.m ");
+	}
 	
 	
 	
