@@ -1,6 +1,6 @@
 package rukmini.tut.inheritance;
 
-public class H2kEmployee {
+public class H2kEmployee  {
 	
 	private int empId;
 	private String name;
@@ -35,6 +35,10 @@ public class H2kEmployee {
 		return "tie color is blue";
 		
 	}
-
+@Override
+public String toString() {
+	// TODO Auto-generated method stub
+	return "empid = " + empId +" name =  " +name;
 	
+}
 }
