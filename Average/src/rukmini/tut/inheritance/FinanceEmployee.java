@@ -24,6 +24,13 @@ public class FinanceEmployee extends H2kEmployee {
 		return "tie color is purple";
 		
 	}
+
+	@Override
+	public void vehicle() {
+		System.out.println("BMW");
+		
+	}
+	
 	
 	
 

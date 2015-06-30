@@ -4,7 +4,7 @@ public class H2kHR {
 
 	public static void main(String[] args) {
 		
-		/*FinanceEmployee fe = new FinanceEmployee(34,"rukmini");
+		FinanceEmployee fe = new FinanceEmployee(34,"rukmini");
 		
 		System.out.println(fe.getEmpId());
 		System.out.println(fe.getName());
@@ -26,18 +26,18 @@ public class H2kHR {
 		};
 		System.out.println(it2.tieColor());
 		System.out.println(fe.toString());
-	*/
+	
 		
-		/*H2kEmployee emp = new FinanceEmployee(65,"prakash");
-		emp.getEmpId();*/
-		//emp.getTax();
+		H2kEmployee emp = new FinanceEmployee(65,"prakash");
+		emp.getEmpId();
+		emp.getTax();
 		
 		FinanceEmployee fEmp = new FinanceEmployee(32, "baba");
 		printInformation(fEmp);
 		ITEmployee itEmp = new ITEmployee(333, "siri");
 		printInformation(itEmp);
 		
-		
+		H2kEmployee emp =new ITEmployee(344, "ffff");
 		
 		
 	}

@@ -28,4 +28,9 @@ public class ITEmployee extends H2kEmployee {
 		
 	}
 
+	@Override
+	public void vehicle() {
+		System.out.println("Honda ");
+	}
+
 }
