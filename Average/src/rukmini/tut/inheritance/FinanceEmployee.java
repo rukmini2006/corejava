@@ -3,7 +3,7 @@ package rukmini.tut.inheritance;
 
 
 
-public class FinanceEmployee extends H2kEmployee implements Swimmable {
+public class FinanceEmployee extends H2kEmployee implements Swimmable,Kickable {
 	
 	private String tax;
 	
@@ -47,6 +47,13 @@ public class FinanceEmployee extends H2kEmployee implements Swimmable {
 	@Override
 	public void swimming() {
 		System.out.println("Iamgood at swiminig ");
+	}
+
+	@Override
+	public void kick() {
+		// TODO Auto-generated method stub
+		System.out.println("Iam good at kicking ");
+		
 	}
 	
 	
