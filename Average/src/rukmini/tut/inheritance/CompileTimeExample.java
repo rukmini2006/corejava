@@ -7,7 +7,7 @@ public class CompileTimeExample {
 		System.out.println(" In callMe");
 	}
 	public void callMe(String name){
-		System.out.println("In call me with name"+name);
+		System.out.println("In call me with name  "+name);
 	}
 	public static void main(String[] args) {
 		CompileTimeExample comp =new CompileTimeExample();
