@@ -1,6 +1,8 @@
 package rukmini.tut.inheritance.itemp;
 
-public final class JavaEmp extends ITEmployee {
+import rukmini.tut.inheritance.Swimmable;
+
+public final class JavaEmp extends ITEmployee implements Swimmable {
 
 	public JavaEmp(int empId, String name) {
 		super(empId, name);
@@ -22,6 +24,12 @@ public final class JavaEmp extends ITEmployee {
 	public String objectOrientedConceptKnow(){
 		return "very good languague";
 		
+	}
+
+	@Override
+	public void swimming() {
+		// TODO Auto-generated method stub
+		System.out.println(" Iam java guy who is bad at swimming");
 	}
 }
 
