@@ -35,8 +35,7 @@ public final class JavaEmp extends ITEmployee implements Swimmable,Kickable {
 
 	@Override
 	public void kick() {
-		// TODO Auto-generated method stub
-		
+		System.out.println(" Iam good at kicking");
 	}
 }
 
