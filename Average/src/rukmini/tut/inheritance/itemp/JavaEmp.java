@@ -1,6 +1,6 @@
 package rukmini.tut.inheritance.itemp;
 
-public class JavaEmp extends ITEmployee {
+public final class JavaEmp extends ITEmployee {
 
 	public JavaEmp(int empId, String name) {
 		super(empId, name);
@@ -18,4 +18,10 @@ public class JavaEmp extends ITEmployee {
 		return "tie color is white java tie";
 		
 	}
+	
+	public String objectOrientedConceptKnow(){
+		return "very good languague";
+		
+	}
 }
+
