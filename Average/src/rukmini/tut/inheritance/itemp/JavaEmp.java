@@ -1,8 +1,9 @@
 package rukmini.tut.inheritance.itemp;
 
+import rukmini.tut.inheritance.Kickable;
 import rukmini.tut.inheritance.Swimmable;
 
-public final class JavaEmp extends ITEmployee implements Swimmable {
+public final class JavaEmp extends ITEmployee implements Swimmable,Kickable {
 
 	public JavaEmp(int empId, String name) {
 		super(empId, name);
@@ -30,6 +31,12 @@ public final class JavaEmp extends ITEmployee implements Swimmable {
 	public void swimming() {
 		// TODO Auto-generated method stub
 		System.out.println(" Iam java guy who is bad at swimming");
+	}
+
+	@Override
+	public void kick() {
+		// TODO Auto-generated method stub
+		
 	}
 }
 
