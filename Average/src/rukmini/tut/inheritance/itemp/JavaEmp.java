@@ -13,4 +13,9 @@ public class JavaEmp extends ITEmployee {
 		
 	}
 
+	@Override
+	public String tieColor(){
+		return "tie color is white java tie";
+		
+	}
 }
