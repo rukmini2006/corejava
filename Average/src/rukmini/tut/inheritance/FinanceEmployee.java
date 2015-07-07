@@ -8,6 +8,11 @@ public class FinanceEmployee extends H2kEmployee {
 	super(empId,name);
 	}
 	
+	public FinanceEmployee(int empId,String name,String taxFinanceExp ) {
+		super(empId,name);
+		this.tax = taxFinanceExp;
+		}
+	
 	public String getTax() {
 		return tax;
 	}
