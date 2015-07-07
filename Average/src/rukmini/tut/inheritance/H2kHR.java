@@ -36,16 +36,18 @@ public class H2kHR {
 	//	emp.getTax();
 		
 				
-		FinanceEmployee fEmp = new FinanceEmployee(32, "baba");
-		printInformation(fEmp);
+		/*FinanceEmployee fEmp = new FinanceEmployee(32, "baba");
+		//printInformation(fEmp);
 		fEmp.tieColor();
 		
 		ITEmployee itEmp = new JavaEmp(333, "siri");
-		itEmp.tieColor();
+		itEmp.tieColor();*/
 		
-		printInformation(itEmp);
+	//	printInformation(itEmp);
 		
 		 emp =new JavaEmp(344, "ffff");
+		System.out.println( emp.tieColor());;
+		 
 		
 		
 	}
