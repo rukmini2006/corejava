@@ -1,6 +1,9 @@
 package rukmini.tut.inheritance;
 
-public class FinanceEmployee extends H2kEmployee {
+
+
+
+public class FinanceEmployee extends H2kEmployee implements Swimmable {
 	
 	private String tax;
 	
@@ -39,6 +42,11 @@ public class FinanceEmployee extends H2kEmployee {
 	public void lunchTime() {
 		// TODO Auto-generated method stub
 		System.out.println("Lunch time is 12:00 p.m ");
+	}
+
+	@Override
+	public void swimming() {
+		System.out.println("Iamgood at swiminig ");
 	}
 	
 	
