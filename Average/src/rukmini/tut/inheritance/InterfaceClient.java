@@ -2,7 +2,7 @@ package rukmini.tut.inheritance;
 
 import rukmini.tut.inheritance.itemp.JavaEmp;
 
-public class InterfaceClient {
+public class InterfaceClient extends Object {
 
 	public static void main(String[] args) {
 		
