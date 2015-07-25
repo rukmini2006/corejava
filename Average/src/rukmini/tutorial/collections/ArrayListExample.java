@@ -82,7 +82,7 @@ public static void iterateArrayList(){
 	while(itr.hasNext()){
 		String value = (String) itr.next();
 		System.out.println(value +" ");
-		if(value =="three")
+		if(value =="two")
 			itr.remove();
 	}
 	
