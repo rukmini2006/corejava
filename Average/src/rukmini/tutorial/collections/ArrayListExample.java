@@ -1,17 +1,24 @@
 package rukmini.tutorial.collections;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.Vector;
 
 public class ArrayListExample {
 
 	public static void main(String[] args) {
 		//arrayListExample();
-		iterateArrayList();
+		//iterateArrayList();
+	//	vectorExample();
+	//	methodReference();
+		generics();
+		
+		
 
 	}
 	
@@ -72,7 +79,7 @@ public class ArrayListExample {
 	return list;
 	
 }*/
-public static void iterateArrayList(){
+/*public static void iterateArrayList(){
 	List list = new LinkedList();
 	list.add("one");
 	list.add("two");
@@ -87,5 +94,50 @@ public static void iterateArrayList(){
 	}
 	
 	System.out.println("After  ===== "+list);
+}*/
+
+/*public static void vectorExample(){
+	
+	Vector vec = new Vector();
+	vec.add("one");
+	Iterator itr = vec.iterator();
+	while(itr.hasNext()){
+		System.out.println(itr.next());
+	}
+	
+}
+public static void methodReference(){
+	
+	List numbers = new ArrayList();
+	numbers.add("one");
+	numbers.add("two");
+	numbers.add("three");
+	
+	Collections.synchronizedList(numbers);
+	
+	numbers.forEach(System.out::print);
+	
+	
+}*/
+
+public static void generics(){
+	List<String> numbers = new ArrayList<String>();
+	numbers.add("one");
+	numbers.add("two");
+	numbers.add("three");
+	List<Person>  persons = new ArrayList<Person>();
+		Person per = new Person();
+		persons.add(per);
+		
+		for(String num:numbers){
+			System.out.println(num);
+			
+			for(Object O :persons){
+				System.out.println(O);
+			}
+		}
+
+	
+	
 }
 }
