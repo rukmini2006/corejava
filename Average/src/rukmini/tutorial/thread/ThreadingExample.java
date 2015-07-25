@@ -1,4 +1,4 @@
-package rukmini.tutorial;
+package rukmini.tutorial.thread;
 
 //import java.io.FileWriter;
 public class ThreadingExample   {

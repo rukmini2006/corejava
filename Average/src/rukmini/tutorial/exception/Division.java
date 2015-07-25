@@ -17,7 +17,7 @@ public class Division {
 		return div;
 		
 	}*/
-	public int divideValues(int a,int b) throws Exception{
+	public static int divideValues(int a,int b) throws Exception{
 		if(b==0){
 			throw new DivisionException("u have passed zero as second argument");
 			
@@ -31,9 +31,5 @@ public class Division {
 
 }
 class subDivision extends Division{
-		@Override
-	public int divideValues(int a, int b) throws ArithmeticException {
-		// TODO Auto-generated method stub
-		return super.divideValues(a, b);
+		
 	}
-}

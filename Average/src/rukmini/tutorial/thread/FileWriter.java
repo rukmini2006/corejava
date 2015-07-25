@@ -1,4 +1,4 @@
-package rukmini.tutorial;
+package rukmini.tutorial.thread;
 
 //import rukmini.tutorial.classes.Employee;
 
