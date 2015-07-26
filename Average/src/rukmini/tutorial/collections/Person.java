@@ -7,9 +7,7 @@ String ssn;
 String place;
 
 
-public Person(){
-	
-}
+
 public Person(String name,String ssn,String place){
 	
 	this.name = name;

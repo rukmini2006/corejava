@@ -126,7 +126,7 @@ public static void generics(){
 	numbers.add("two");
 	numbers.add("three");
 	List<Person>  persons = new ArrayList<Person>();
-		Person per = new Person();
+		Person per = new Person("ram","2222","ind");
 		persons.add(per);
 		
 		for(String num:numbers){

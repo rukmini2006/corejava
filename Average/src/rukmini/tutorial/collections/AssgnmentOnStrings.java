@@ -5,6 +5,7 @@ public class AssgnmentOnStrings {
 	public static void main(String[] args) {
 		
 	String fruits[] = new String[4];
+	
 	fruits[0] = "One";
 	fruits[1] = "Two";
 	fruits[2] = "Three";
