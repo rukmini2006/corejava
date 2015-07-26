@@ -3,6 +3,7 @@ package rukmini.tutorial.collections;
 public class AssgnmentOnStrings {
 
 	public static void main(String[] args) {
+		
 	String fruits[] = new String[4];
 	fruits[0] = "One";
 	fruits[1] = "Two";
@@ -10,10 +11,16 @@ public class AssgnmentOnStrings {
 	fruits[3] = "Four";
 	
 	String fruitNews[] = new String[10];
-	for(String f:fruits){
-		System.out.println(f);
+	//int index = fruits.length;
+	int index = fruitNews.length-1;
+	
+	for(int i = 0; i<fruits.length;i++){
+		fruitNews[i] = fruits[i];
+		
 	}
-		fruitNews[7] = "Five";
+	//	fruitNews[index] = "Five";
+	//	fruitNews[index+1] = "Six";
+	fruitNews[index] = "seven";
 		
 		for(String g:fruitNews){
 		
