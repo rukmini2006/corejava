@@ -60,8 +60,11 @@ public class Person implements Comparable {
 
 	@Override
 	public int compareTo(Object o) {
-		return 
-		return 0;
+		//return this.name.compareTo(((Person)o).getName());
+//	return this.place.compareTo(((Person)o).getPlace());
+	return this.profession.compareTo(((Person)o).getProfession());
+		
+		
 	}
 
 }
