@@ -11,7 +11,7 @@ public class ReadWriteToDatFile {
 
 	public static void main(String[] args) throws IOException, ClassNotFoundException {
 		// TODO Auto-generated method stub
-	//	writeObject();
+		//writeObject();
 		readObject();
 
 	}
@@ -34,8 +34,8 @@ public class ReadWriteToDatFile {
 		FileInputStream fis = new FileInputStream("rukmini.dat");
 		ObjectInputStream ois = new ObjectInputStream(fis);
 		Person perRead = (Person) ois.readObject();
-		System.out.println("After " +perRead.getName() + " " +perRead.getProfession() + " " +perRead.getPlace() + " " +perRead.getSsn());
-		
+		System.out.println(perRead.getName() + " " +perRead.getProfession() + " " +perRead.getPlace() + " " +perRead.getSsn());
+		System.out.println(perRead.getGender());
 		ois.close();
 	}
 }
