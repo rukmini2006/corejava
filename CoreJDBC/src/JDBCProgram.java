@@ -68,7 +68,7 @@ public class JDBCProgram {
 	}
 	private static void closeConnections(ResultSet rs2, Statement stmt2,
 			Connection conn2) {
-		// TODO Auto-generated method stub
+		
 		
 	}
 

@@ -3,6 +3,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,6 +11,8 @@ public class EmpDaoImpl implements EmpDao {
 
 	static Connection con = null;
 	static PreparedStatement ps = null;
+	static ResultSet rs = null;
+	
 	static {
 		try {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
@@ -26,21 +29,16 @@ public class EmpDaoImpl implements EmpDao {
 
 	public List<Employee> getEmployeeDetails(int salary) {
 		try {
-
-			// Statement stmt = con.createStatement();
-			// ResultSet rs =
-			// stmt.executeQuery("select * from employees where salary>4000");
+			
 			ps = con.prepareStatement("select * from employees where salary>(?)");
 			ps.setInt(1, salary);
 			ResultSet rs = ps.executeQuery();
 			List<Employee> EmpList = new ArrayList<Employee>();
-			System.out.println("Hi before rs ");
 			while (rs.next()) {
 				System.out.println(rs.getString("EMPLOYEE_ID") + " "
 						+ rs.getString("FIRST_NAME") + " "
 						+ rs.getInt("salary"));
 				Employee emp = new Employee();
-
 				emp.setEmployeeId(rs.getInt("employee_id"));
 				emp.setSalary(rs.getDouble("salary"));
 				EmpList.add(emp);
@@ -65,6 +63,16 @@ public class EmpDaoImpl implements EmpDao {
 		}
 
 		return false;
+	}
+
+	@Override
+	public void closeConnections() {
+		try {
+				con.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 }

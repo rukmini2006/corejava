@@ -17,4 +17,12 @@ public class EmployeeServiceImpl implements EmployeeService {
 		return dao.setNewSalary(emp_id, sal);
 	}
 
+	@Override
+	public void closeConnections() {
+		
+		EmpDao dao = new EmpDaoImpl();
+		dao.closeConnections();
+		
+	}
+
 }
