@@ -1,4 +1,3 @@
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,10 +10,10 @@ public class JdbcClient {
 		// TODO Auto-generated method stub
 	//	Employee emp = new Employee();
 		EmployeeService service = new EmployeeServiceImpl();
-		List<Employee>EmpList = service.getEmployeeDetails(15000);
+		List<Employee>EmpList = service.getEmployeeDetails(4000);
 		
 		System.out.println("======================== ");
-		Iterator itr = EmpList.iterator();
+		Iterator<Employee> itr = EmpList.iterator();
 		while(itr.hasNext()){
 		Employee emp =(Employee) itr.next();
 			System.out.println(emp.getEmployeeId()+" "+emp.getSalary());
