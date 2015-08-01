@@ -11,7 +11,7 @@ public class JdbcClient {
 		// TODO Auto-generated method stub
 	//	Employee emp = new Employee();
 		EmployeeService service = new EmployeeServiceImpl();
-		List<Employee>EmpList = service.getEmployeeDetails(4000);
+		List<Employee>EmpList = service.getEmployeeDetails(15000);
 		
 		System.out.println("======================== ");
 		Iterator itr = EmpList.iterator();
