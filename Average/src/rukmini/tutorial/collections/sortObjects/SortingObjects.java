@@ -9,6 +9,7 @@ public final class  SortingObjects {
     private static final List list = getPersons();
 
     public static void main(String[] args) {
+    	
     	//List listO =getPersons();
     	//System.out.println(listO);
         		//sortCollection();

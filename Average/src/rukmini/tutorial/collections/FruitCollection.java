@@ -14,8 +14,8 @@ public class FruitCollection {
 	}
 	
 	public static void addPerson(){
-		Person  per1= new Person("rukmini","1234","california");
-		Person per2 = new Person("prakash","3456","chicago");
+		Person  per1= new Person("rukmini","softwar","california");
+		Person per2 = new Person("prakash","hardware","chicago");
 		
 		List<Person> personList = new ArrayList<Person>();
 		personList.add(per1);
@@ -24,7 +24,7 @@ public class FruitCollection {
 		for(int i = 0; i<personList.size(); i++){
 			Person obj = (personList.get(i));
 			System.out.println(obj.getName());
-			System.out.println(obj.getSsn());
+			System.out.println(obj.getprofession());
 			System.out.println(obj.getPlace());
 			
 		}
