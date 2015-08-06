@@ -29,7 +29,7 @@ public class Main extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out=response.getWriter();
-		out.println("Hello This is from Main  "+request.getParameter("name"));
+		out.println("Hello This is from Main  "+request.getParameter("name")+"<br/>");
 		out.println("Hello this is from Main " +request.getParameter("place"));
 	}
 

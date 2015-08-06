@@ -29,8 +29,11 @@ public class Header extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		PrintWriter out=response.getWriter();
+		String age1=request.getParameter("age");
+		int idealHeight = 200/Integer.parseInt(age1);
 		out.println("Hello This is from Header  "+request.getParameter("name")+"<br/>");
 		out.println("Hello this is from header " +request.getParameter("place")+"<br/>");
+		out.println("IdealHeight for the  age "+age1 + " should be " +idealHeight+"<br/>");
 	}
 
 	/**
