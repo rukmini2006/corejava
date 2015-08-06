@@ -1,6 +1,7 @@
 package rukmini.tutorial.servlet;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -57,14 +58,28 @@ public class ServletToGetEmployeeSpecifiedSalary extends HttpServlet {
 			Class.forName("oracle.jdbc.driver.OracleDriver");
 			Connection con  = DriverManager.getConnection("jdbc:oracle:thin:@localhost:1521:XE","hr","hr");
 			PreparedStatement ps = con.prepareStatement("select * from employees WHERE SALARY>?" );
+			//PreparedStatement ps = con.prepareStatement("select * from employees WHERE SALARY>? and SALARY<?" );
 			//ps.setInt(1, salary);
 			
 			ps.setDouble(1, Double.valueOf(sal));
+		//	ps.setDouble(2, Double.valueOf(sal));
 			System.out.println("=======RESULSTS==================");
 			ResultSet rs =ps.executeQuery();
+			PrintWriter out = 	response.getWriter();
+			out.println("<HTML><BODY>");
+			out.println("<table border=1 style=width:100%>");
 			while(rs.next()){
-				System.out.println(rs.getString("FIRST_NAME")+ " " +rs.getInt("SALARY"));
+				//System.out.println(rs.getString("FIRST_NAME")+"  "+rs.getInt("SALARY"));
+				out.println("<tr>");
+				out.println("<td>"+rs.getString("FIRST_NAME")+"</td>");
+				out.println("<td>"+rs.getInt("salary")+"</td>");
+				out.println("</tr>");		
 			}
+			
+			out.println("</TABLE>");
+					out.println("</BODY></HTML>");
+			
+			
 			
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
