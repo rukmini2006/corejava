@@ -1,6 +1,8 @@
 package rukmini.tutorial.corejava.servlet.communication;
 
+import java.awt.List;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -29,15 +31,28 @@ public class CommunicationServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	response.setContentType("text/html");
-	RequestDispatcher header =request.getRequestDispatcher("Header");
-	header.include(request, response);
+	
+	int age=Integer.parseInt(request.getParameter("age"));
+	String value = "Your age is "+age;
+	
+	java.util.List name=new ArrayList();
+	name.add("one");
+	name.add("two");
+	request.setAttribute("names",name);
+	
+	
+	
+		request.setAttribute("ageString","value");
+	
+	/*RequestDispatcher header =request.getRequestDispatcher("Header");
+	header.include(request, response);*/
 	
 	
 	RequestDispatcher main =request.getRequestDispatcher("Main");
 	main.include(request, response);
-	
-	//RequestDispatcher footer =request.getRequestDispatcher("footer");
-	//footer.include(request, response);
+	/*
+	RequestDispatcher footer =request.getRequestDispatcher("footer");
+	footer.include(request, response);*/
 	
 	}
 
