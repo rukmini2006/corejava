@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+<class name="com.rukmini.hibernateproject.Student.StudentUser" table="STUDENTUSER">
+<id name="studentId" type="int"  > 
+<column name="STUDENT_ID" precision ="5" scale="0" />
+<generator class="assigned"></generator>
+</id>
+<property name="studentName" type="string">
+<column name="STUDENT_NAME" length="20" not-null="true"/>
+</property>
+<property name="age" type="int">
+<column name="AGE" length="3" not-null="true"/>
+</property>
+<property name="college" type="string">
+<column name="COLLEGE" length="20" not-null="true"/>
+</property>
+</class>
+</hibernate-mapping>
