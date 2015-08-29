@@ -16,6 +16,10 @@ import javax.persistence.TemporalType;
 @Table(name = "DBUSER")
 public class DBUSER implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private int userId;
 	private String username;
 	private String createdBy;

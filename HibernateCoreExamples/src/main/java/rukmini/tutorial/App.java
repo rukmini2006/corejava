@@ -1,4 +1,4 @@
-package rukmini.tutorial.hibernateCOre;
+package rukmini.tutorial;
 
 import java.util.Date;
 
