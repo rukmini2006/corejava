@@ -12,6 +12,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 
 import com.DO.EmployeeDO;
 
@@ -133,7 +134,68 @@ public class EmployeeClient {
 			exp.printStackTrace();
 		}
 	}
-
-	
-
 }
+	
+	/*public EmployeeDO invoke(int empid) {
+		// TODO Auto-generated method stub
+		try{ 
+			factory = new Configuration().configure().buildSessionFactory(); 
+			
+		}catch (Throwable ex) { 
+			System.err.println("Failed to create sessionFactory object." + ex); 
+			throw new ExceptionInInitializerError(ex); 
+		}
+		EmployeeDO empdo=criteriaExamples1();
+			return empdo;
+			//projections();
+	}
+	
+	public static EmployeeDO criteriaExamples1(){
+		Session session = factory.openSession();
+		Transaction tx = null; 
+		try{ 
+			tx = session.beginTransaction();
+			
+//			Employees emp = (Employees)session.get(Employees.class, 100);
+//			System.out.println("EmployeeClient.main()" + emp.getEmail());
+			
+			Criteria cr = session.createCriteria(Employees.class); // Select * from Employees
+			
+			cr.add(Restrictions.eq("empid", 100)); // Select * from employees where salary = 9500
+EmployeeDO empdo1 = null;
+			
+		//	List<EmployeeDO> empList = new ArrayList<EmployeeDO>();
+			
+				System.out.println("in DAO Impl ");
+			//	List employees = cr.list();
+				for (Iterator iterator = employees.iterator(); iterator.hasNext();){ 
+					Employees employee = (Employees) iterator.next(); 
+					empdo = new EmployeeDO();
+					//empdo.setEmpid(employee.g);
+				empdo1=new EmployeeDO();
+				empdo1.setEmpid(empdo1.getEmpid());
+				empdo1.setFname(empdo1.getFname());
+				empdo1.setLname(empdo1.getLname());
+				empdo1.setEmail(empdo1.getEmail());
+					empdo.setEmpid(employee.getEmployeeId());
+					empdo.setFname(employee.getFirstName());
+					empdo.setLname(employee.getLastName());
+					empdo.setEmail(employee.getEmail());
+					empList.add(empdo);
+			
+				return empdo1;		
+				
+					
+		
+			System.out.println("EmployeeClient.main()" + employees.size());
+			tx.commit();
+		}catch(HibernateException exp){
+			exp.printStackTrace();
+		}
+		return null;
+	}
+			
+		
+	}
+	*/
+
