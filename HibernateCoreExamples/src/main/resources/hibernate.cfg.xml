@@ -11,8 +11,8 @@
         <property name="hibernate.dialect">org.hibernate.dialect.Oracle10gDialect</property>
         <property name="hibernate.default_schema">HR</property>
         <property name="show_sql">true</property>
-        <mapping resource="rukmini\tutorial\DBUser.hbm.xml"></mapping>
-		 <mapping class="rukmini.tutorial.user.DBUSER"></mapping> 
-        <!-- <mapping resource="jrout/tutorial/hibernatecore/customer.hbm.xml"/> -->
+         <mapping resource="rukmini\tutorial\DBUser.hbm.xml"></mapping>
+		<!--  <mapping class="rukmini.tutorial.user.DBUSER"></mapping>   -->
+         <!-- <mapping resource="rukmini/tutorial/customer.hbm.xml"/> -->
     </session-factory>
 </hibernate-configuration>

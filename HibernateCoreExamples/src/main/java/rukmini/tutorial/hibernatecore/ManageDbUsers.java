@@ -22,13 +22,13 @@ public class ManageDbUsers {
 		} 
 		ManageDbUsers manageUsers = new ManageDbUsers(); 
 		/* Add few User records in database */ 
-//		Integer dbuser1 = manageUsers.addDBUser(1,"HR", "Jayram", new Date()); 
-//		Integer dbuser2 = manageUsers.addDBUser(2,"Employee", "Jayram", new Date()); 
+		//Integer dbuser1 = manageUsers.addDBUser(1,"HR", "Jayram", new Date()); 
+		Integer dbuser2 = manageUsers.addDBUser(2,"Employee", "Jayram", new Date()); 
 //		Integer dbuser3 = manageUsers.addDBUser(3,"Student", "Jayram", new Date()); 
 		/* List down all the DBUsers */
-		manageUsers.listDBUsers(); 
+		//manageUsers.listDBUsers(); 
 		/* Update DBUser's records */ 
-//		manageUsers.updateDBUser(dbuser1, "Ramesh");
+		manageUsers.updateDBUser(dbuser2, "das");
 		/* Delete an DBUser from the database */ 
 //		manageUsers.deleteDBUser(dbuser2); 
 		/* List down new list of the DBUsers */ 
@@ -60,7 +60,7 @@ public class ManageDbUsers {
 		Transaction tx = null; 
 		try{ 
 //			tx = session.beginTransaction();
-			List dbuserList = session.createQuery("FROM DBUser").list(); 
+			List dbuserList = session.createQuery("FROM DBUSER").list(); 
 			for (Iterator iterator = dbuserList.iterator(); iterator.hasNext();) {
 				DBUSER dbuser = (DBUSER) iterator.next();
 				System.out.print("User ID: " + dbuser.getUserId());
