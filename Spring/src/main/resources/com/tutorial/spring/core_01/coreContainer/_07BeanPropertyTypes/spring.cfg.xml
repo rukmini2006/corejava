@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd">
+
+	<bean id="dat" class="java.util.Date"></bean>
+	<bean id="tbean"
+		class="com.tutorial.spring.core_01.coreContainer._07BeanPropertyTypes.TestBean">
+		<property name="msg" value="Hello" />
+		<property name="dt" ref="dat" />
+	</bean>
+	<bean id="demo"
+		class="com.tutorial.spring.core_01.coreContainer._07BeanPropertyTypes.DemoInterImpl">
+		<property name="salary">
+			<value>10000</value>
+		</property>
+		<property name="tb" ref="tbean"/>
+		<property name="dt" ref="dat"/>
+
+		<property name="fruits">
+			<list>
+				<value>orange</value>
+				<value>apple</value>
+				<value>banana</value>
+			</list>
+		</property>
+
+		<property name="veg">
+			<list>
+				<value>cabbage</value>
+				<value>cauliflower</value>
+				<value>spinach</value>
+			</list>
+		</property>
+
+		<property name="phone_nos">
+			<set>
+				<value>2342342234</value>
+				<value>1231234123</value>
+			</set>
+		</property>
+
+		<property name="emails">
+			<set>
+				<value>jayram@gmail.com</value>
+				<value>rukmini@gmail.com</value>
+			</set>
+		</property>
+
+
+		<property name="perDetails">
+			<map>
+				<entry key="sai" value="Universal king" />
+				<entry>
+					<key>
+						<value>Rukmini</value>
+					</key>
+					<value>Student</value>
+				</entry>
+			</map>
+		</property>
+
+		<property name="capitals">
+			<map>
+
+				<entry>
+					<key>
+						<value>satya</value>
+					</key>
+					<value>born to lead</value>
+				</entry>
+
+				<entry>
+					<key>
+						<ref bean="dat" />
+					</key>
+					<ref bean="tbean" />
+				</entry>
+
+			</map>
+		</property>
+
+		<property name="faculties">
+			<props>
+				<prop key="karunakaran">Java Faculty</prop>
+				<prop key="sainath">univesalgod</prop>
+			</props>
+		</property>
+
+		<property name="courses">
+			<list>
+				<value>java</value>
+				<value>dotnet</value>
+				<value>Oracle</value>
+			</list>
+		</property>
+
+		<property name="runs">
+			<list>
+				<value>30</value>
+				<value>40</value>
+			</list>
+		</property>
+		
+		<!-- <property name=""></property> -->
+		
+	</bean>
+
+</beans>

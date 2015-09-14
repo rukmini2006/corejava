@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC  "-//SPRING//DTD BEAN//EN" 
+"http://www.springframework.org/dtd/spring-beans.dtd">
+<beans>
+<bean id="date" class="java.util.Date">
+<property name="year">
+<value>85</value>
+</property>
+<property name="month">
+<value>10</value>
+</property>
+<property name="date">
+<value>25</value>
+</property>
+</bean>
+
+<bean id="demo" class="com.tutorial.spring.core_01.coreContainer._04PreDefinedBean.DemoInterImpl">
+<property name="message">
+<value>rukmini</value>
+</property>
+<property name="dt">
+<ref bean="date"/>
+</property>
+</bean>
+</beans>
