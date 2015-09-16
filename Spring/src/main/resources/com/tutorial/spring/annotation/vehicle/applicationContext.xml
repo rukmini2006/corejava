@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+      xmlns:context="http://www.springframework.org/schema/context"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.springframework.org/schema/beans
+                            http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+                            http://www.springframework.org/schema/context
+                            http://www.springframework.org/schema/context/spring-context-3.2.xsd">
+                           <!--  http://www.springframework.org/schema/jee
+                            http://www.springframework.org/schema/jee/spring-jee-3.2.xsd 
+                            http://www.springframework.org/schema/tx
+                            http://www.springframework.org/schema/tx/spring-tx-3.2.xsd -->
+
+	<!-- If Using context:component-scan then we need the @Component for each class and @Autowired annotation for the setter
+	methods -->
+	 <context:component-scan base-package="com.tutorial.spring.annotation"/> 
+	 
+  <!--  
+  	Once u define <context:annotation-config/> and @Autowired Annotation in ur setter methods ,
+  	then u have to have a bean of tthat type in ur config xml eg : <bean id="car "
+  	If using annotation config then no need to add @Component Annoation at each Class.-->
+  	 
+	<!--  <context:annotation-config/>
+	<bean id="car" class="com.tutorial.spring.annotation.fourwheel.Car"/>
+	<bean id="bike" class="com.tutorial.spring.annotation.twowheel.Bike"/>
+ 	<bean id="vehicle" class="com.tutorial.spring.annotation.vehicle.Vehicle"/> -->
+ 	<!-- <bean id="bike1" class="com.tutorial.spring.annotation.twowheel.Bike"/>
+ 	<bean id="bike2" class="com.tutorial.spring.annotation.twowheel.Bike"/> -->
+   
+ </beans>

@@ -1,0 +1,721 @@
+{\rtf1\ansi\ansicpg1252\deff0\nouicompat\deflang1033{\fonttbl{\f0\fnil\fcharset0 Courier New;}{\f1\fnil\fcharset238{\*\fname Courier New;}Courier New CE;}{\f2\fnil Courier New;}{\f3\fnil\fcharset0 Calibri;}}
+{\colortbl ;\red0\green0\blue255;}
+{\*\generator Riched20 6.3.9600}\viewkind4\uc1 
+\pard\f0\fs22\'d0\'cf\'11\'e0\'a1\'b1\'1a\'e1\tab\tab\'04\tab\'04\'16\par
+\f1\u338?\f0\rquote d\'89\'8b\'8d\'8b\'c8e\'8b\'c8e\'8b\f2\line\f0\'84\f2\line\f0\'84\f2\line\f0\'84\'be\'0f\'89\'8b\f2\line\f0\'84\f2\line\f0\'84\f2\line\f0\'84\f1\u402?\f0\'89\'c8e\'86d\f2\page\f0\'bc\'a2?\'cb\'01\line\'89\f2\par
+\f0\'da\'8b\f2\par
+\f1\u338?\f0\'89\f2\par
+\f0\'90\tab\'81\f1\u402?\f0\'89\f1\u402?\f0\'89\'90\f1\'8a\f0\line\'84\'eae\page\'8b\'af\'8b\'f5\f1\u402?\f0\par
+\f1\u338?\f0\page\'01\tab\tab\tab\par
+\par
+        Aspect Oriented Programming\par
+1) Introduction\par
+One of the major features available in the Spring Distribution is the provision for separating the cross-cutting concerns in an Application through the means of Aspect Oriented Programming. Aspect Oriented Programming is sensibly new and it is not a replacement for Object Oriented Programming. In fact, AOP is another way of organizing your Program Structure.\par
+2.1) The Real Problem\par
+Since AOP is relatively new, this section devotes time in explaining the need for Aspect Oriented Programming and the various terminologies that are used within. Let us look into the traditional model of before explaining the various concepts. \par
+Consider the following sample application, \par
+Account.java \par
+public class Account\{\par
+\par
+    public long deposit(long depositAmount)\par
+     \{\tab\par
+        newAmount = existingAccount + depositAccount;\par
+        currentAmount = newAmount;\par
+        return currentAmount;\par
+     \}\par
+    public long withdraw(long withdrawalAmount)\par
+     \{\par
+        if (withdrawalAmount <= currentAmount)\{\par
+            currentAmount = currentAmount \f2\endash  withdrawalAmount;\par
+        \}\par
+        return currentAmount;\par
+     \}\tab\par
+ \}\tab\tab\par
+The above code models a simple Account Object that provides services for deposit and withdrawal operation in the form of Account.deposit() and Account.withdraw() methods. Suppose say we want to add some bit of the security to the Account class, telling that only users with BankAdmin privilege is allowed to do the operations. With this new requirement being added, let us see the modified class structure below. \par
+\par
+\par
+\par
+Account.java \par
+public class Account\{\par
+\par
+    public long deposit(long depositAmount)\{\tab\tab\par
+\par
+        User user = getContext().getUser();\par
+        if (user.getRole().equals("BankAdmin")\{\tab\tab\par
+            newAmount = existingAccount + depositAccount;\par
+            currentAmount = newAmount;\par
+        \}\par
+        return currentAmount;\par
+\par
+    \}\par
+\par
+    public long withdraw(long withdrawalAmount)\{\par
+\par
+        User user = getContext().getUser();\par
+        if (user.getRole().equals("BankAdmin")\{\par
+            if (withdrawalAmount <= currentAmount)\{\par
+                currentAmount = currentAmount \endash  withdrawalAmount;\par
+            \}\par
+        \}\par
+        return currentAmount;\par
+    \}\tab\par
+\}\par
+Assume that getContext().getUser() someway gives the current User object who is invoking the operation. See the modified code mandates the use of adding additional if condition before performing the requested operation. Assume that another requirement for the above Account class is to provide some kind of Logging and Transaction Management Facility. Now the code expands as follows, \par
+Account.java \par
+public class Account\{\par
+\par
+    public long deposit(long depositAmount)\{\tab\tab\par
+\par
+        logger.info("Start of deposit method");\par
+        Transaction trasaction  = getContext().getTransaction();\par
+        transaction.begin();\tab\tab\par
+        try\{\par
+            User user = getContext().getUser();\par
+            if (user.getRole().equals("BankAdmin")\{\tab\tab\par
+                newAmount = existingAccount + depositAccount;\par
+                currentAmount = newAmount;\par
+            \}\par
+            transaction.commit();\par
+        \}catch(Exception exception)\{\par
+            transaction.rollback();\par
+        \}\par
+        logger.info("End of deposit method");\par
+        return currentAmount;\par
+\par
+    \}\par
+\par
+    public long withdraw(long withdrawalAmount)\{\par
+\par
+        logger.info("Start of withdraw method");\par
+        Transaction trasaction = getContext().getTransaction();\par
+        transaction.begin();\tab\tab\par
+        try\{\par
+            User user = getContext().getUser();\par
+            if (user.getRole().equals("BankAdmin")\{\par
+                if (withdrawalAmount <= currentAmount)\{\par
+                    currentAmount = currentAmount \endash  withdrawalAmount;\par
+                \}\par
+            \}\par
+            transaction.commit();\par
+        \}catch(Exception exception)\{\par
+            transaction.rollback();\par
+        \}\par
+        logger.info("End of withdraw method");\par
+        return currentAmount;\par
+\par
+    \}\tab\par
+\}\par
+The above code has so many dis-advantages. The very first thing is that as soon as new requirements are coming it is forcing the methods and the logic to change a lot which is against the Software Design. Remember every piece of newly added code has to undergo the Software Development Lifecycle of Development, Testing, Bug Fixing, Development, Testing, .... This, certainly cannot be encouraged in particularly big projects where a single line of code may have multiple dependencies between other Components or other Modules in the Project. \par
+2.2) The Solution through AOP\par
+Let us re-visit the Class Structure and the Implementation to reveal the facts. The Account class provides services for depositing and withdrawing the amount. But when you look into the implementation of these services, you can find that apart from the normal business logic, it is doing so many other stuffs like Logging, User Checking and Transaction Management. See the pseudo-code below that explains this. \par
+public void deposit()\{\par
+\par
+    // Transaction Management\par
+    // Logging\par
+    // Checking for the Privileged User\par
+    // Actual Deposit Logic comes here \par
+\}\par
+public void withdraw()\{\par
+\par
+    // Transaction Management\par
+    // Logging\par
+    // Checking for the Privileged User\par
+    // Actual Withdraw Logic comes here \par
+\}\par
+From the above pseudo-code, it is clear that Logging, Transaction Management and User Checking which are never part of the Deposit or the Service functionality are made to embed in the implementation for completeness. Specifically, AOP calls this kind of logic that cross-cuts or overlaps the existing business logic as Concerns or Cross-Cutting Concerns. The main idea of AOP is to isolate the cross-cutting concerns from the application code thereby modularizing them as a different entity. It doesn't mean that because the cross-cutting code has been externalized from the actual implementation, the implementation now doesn't get the required add-on functionalities. There are ways to specify some kind of relation between the originalbusiness code and the Concerns through some techniques which we will see in the subsequent sections. \par
+3) AOP Terminologies\par
+It is hard to get used with the AOP terminologies at first but a thorough reading of the following section along with the illustrated samples will make it easy. Let us look into the majorly used AOP jargons. \par
+3.1) Aspects\par
+An Aspect is a functionality or a feature that cross-cuts over objects. The addition of the functionality makes the code to Unit Test difficult because of its dependencies and the availability of the various components it is referring. For example, in the below example, Logging and Transaction Management are the aspects. \par
+public void businessOperation(BusinessData data)\{\par
+\par
+    // Logging\par
+    logger.info("Business Method Called");\par
+\par
+    // Transaction Management Begin\par
+    transaction.begin();\par
+    // Do the original business operation here\par
+    transaction.end();\par
+\}\par
+3.2) JoinPoint\par
+Join Points defines the various Execution Points where an Aspect can be applied. For example, consider the following piece of code, \par
+public void someBusinessOperation(BusinessData data)\{\par
+\par
+    //Method Start -> Possible aspect code here like logging.\par
+\par
+    try\{\par
+        // Original Business Logic here.\par
+    \}catch(Exception exception)\{\par
+        // Exception -> Aspect code here when some exception is raised.\tab\par
+    \}finally\{\par
+        // Finally -> Even possible to have aspect code at this point too.\par
+    \}\par
+\par
+    // Method End -> Aspect code here in the end of a method.\par
+\}\par
+In the above code, we can see that it is possible to determine the various points in the execution of the program like Start of the Method, End of the Method, the Exception Block, the Finally Block where a particular piece of Aspect can be made to execute. Such Possible Execution Points in the Application code for embedding Aspects are called Join Points. It is not necessary that an Aspect should be applied to all the possible Join Points. \par
+3.3) Pointcut\par
+As mentioned earlier, Join Points refer to the Logical Points wherein a particular Aspect or a Set of Aspects can be applied. A Pointcut or a Pointcut Definition will exactly tell on which Join Points the Aspects will be applied. To make the understanding of this term clearer, consider the following piece of code, \par
+aspect LoggingAspect \{\}\par
+aspect TransactionManagementAspect \{\}\par
+\par
+Assume that the above two declarations declare something of type Aspect. Now consider the following piece of code,\par
+\par
+public void someMethod()\{\par
+\par
+    //Method Start\par
+\par
+    try\{\par
+        // Some Business Logic Code.\par
+    \}catch(Exception exception)\{\par
+        // Exception handler Code\par
+    \}finally\{\par
+        // Finally Handler Code for cleaning resources.\par
+    \}\par
+\par
+    // Method End\par
+\}\par
+\par
+In the above sample code, the possible execution points, i.e. Join Points, are the start of the method, end of the method, exception block and the finally block. These are the possible points wherein any of the aspects, Logging Aspect or Transaction Management Aspect can be applied. Now consider the following Point Cut definition,\par
+\par
+pointcut method_start_end_pointcut()\{\par
+\par
+    // This point cut applies the aspects, logging and transaction, before the \par
+    // beginning and the end of the method.\par
+\}\par
+\par
+pointcut catch_and_finally_pointcut()\{\par
+\par
+    // This point cut applies the aspects, logging and transaction, in the catch \par
+    // block (whenever an exception raises) and the finally block.\par
+\}\par
+As clearly defined, it is possible to define a Point Cut that binds the Aspect to a particular Join Point or some Set of Join Points. \par
+3.4) Advice\par
+Now that we are clear with the terms like Aspects, Point Cuts and Join Points, let us look into what actually Advice is. To put simple, Advice is the code that implements the Aspect. In general, an Aspect defines the functionality in a more abstract manner. But, it is this Advice that provides a Concrete code Implementation for the Aspect. \par
+In the subsequent sections, we will cover the necessary API in the form of classes and interfaces for supporting the Aspect Oriented Programming in Spring. \par
+4) Creating Advices in Spring\par
+As mentioned previously, Advice refers to the actual implementation code for an Aspect. Other Aspect Oriented \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14Programming Languages\'15 also provide support for Field Aspect, i.e. intercepting a field before its value gets affected. But Spring provides support only Method Aspect. The following are the different types of aspects available in Spring. \par
+Before Advice \par
+After Advice \par
+Throws Advice \par
+Around Advice \par
+4.1) Before Advice \par
+Before Advice is used to intercept before the method execution starts. In AOP, Before Advice is represented in the form of org.springframework.aop.BeforeAdvice. For example, a System should make \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14security\'15 check on users before allowing them to accessing resources. In such a case, we can have a Before Advice that contains code which implements the \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14User Authentication\'15 Logic. \par
+Consider the following piece of Code, \par
+\par
+Authentication.java \par
+\tab\tab\tab\tab\par
+public class Authentication implements MethodBeforeAdvice\{\par
+\par
+    public void before(Method method, Object[] args, Object target) throws Throwable\{\par
+            // place the Authentication Logic here\par
+        \}\par
+   \}\par
+\tab\tab\tab\tab\par
+The above class extends BeforeAdvice, thereby telling that before() method will be called before the execution of the method call. Note that the \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14java\'15.lang.reflect.Method method object represents target method to be invoked, Object[] args refers to the various arguments that are passed on to the method and target refers to the object which is calling the method. \par
+\par
+\par
+\par
+System.java \par
+public class \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14System\'15\{\par
+    public void login()\{\par
+        // Apply Authentication Advice here.\par
+    \}\par
+    public void logout()\{\par
+        // Apply Authentication Advice here too.\par
+    \}\par
+\}\tab\tab\tab\tab\par
+Note that, till now we have not seen any code that will bind the Advice implementation to the actual calling method. We will see how to do that in the Samples section. \par
+4.2) After Advice\par
+After Advice will be useful if some logic has to be executed before Returning the Control within a method execution. This advice is represented by the interface org.springframework.aop.AfterReturningAdvice. For example, it is common in \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14Application\'15 to Delete the Session Data and the various information pertaining to a user, after he has logged out from the Application. These are ideal candidates for After Advice. \par
+CleanUpOperation.java \par
+public class CleanUpOperation implements AfterReturningAdvice \{\par
+\par
+    public void afterReturning(Object returnValue, Method method, Object[] args, \par
+    Object target) throws Throwable\{\par
+        // Clean up session and user information.\par
+    \}\par
+\}\tab\tab\tab\tab\par
+Note that, afterReturning() will be method that will be called once the \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14method returns\'15 normal execution. If some exception happens in the method execution the afterReturning() method will never be called. \par
+4.3) Throws Advice\par
+When some kind of exception happens during the execution of a method, then to handle the exception properly, Throws Advice can be used through the means of org.springframework.aop.ThrowsAdvice. Note that this interface is a marker interface meaning that it doesn't have any method within it. The method signature inside the Throws Advice can take any of the following form, \par
+public void afterThrowing(Exception ex)\par
+\par
+public void afterThrowing(Method method, Object[] args, Object target, \par
+Exception exception)\tab\tab\tab\tab\par
+For example, in a File Copy program, if some kind of exception happens in the mid-way then the newly created target file has to be deleted as the partial content in the file doesn't carry any sensible meaning. It can be easily achieved through the means of Throws Advice. \par
+DeleteFile.java \par
+public class DeleteFile implements ThrowsAdvice\{\par
+\par
+    public void afterThrowing(Method method, Object[] args, Object target,Exception exception)\{\par
+    \}\par
+\}\tab\tab\tab\tab\par
+Note that the above method will be called when an Exception, that too of type IOException is thrown by the File Copy Program. \par
+4.4) Around Advice\par
+This Advice is very different from the other types of Advice that we have seen before, because of the fact that, this Advice provides finer control whether the target method has to be called or not. Considering the above advices, the return type of the method signature is always void meaning that, the Advice itself cannot change the return arguments of the method call. But Around Advice can even change the return type, thereby returning a brand \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-2.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14new object\'15 of other type if needed. \par
+Consider the following code, \par
+pubic void relate(Object o1, Object o2)\{\par
+\par
+    o1.establishRelation(o2);\par
+\par
+\}\par
+\par
+Assume that we have a method that provides an Association link between two objects. But before that, we have to we want to ensure that the type of the Objects being passed must conform to a standard, by implementing some interfaces. We can have this arguments check in the Around Advice rather than having it in the actual method implementation. The Around Advice is represented by org.aopalliance.intercept.MethodInterceptor. \par
+ValidateArguments.java \par
+public class ValidateArguments implements MethodInterceptor \{\par
+\par
+    public Object invoke(MethodInvocation invocation) throws Throwable \{\par
+\par
+        Object arguments [] = invocation.getArguments()\par
+        if ((arguments[0] instanceof Parent) && (arguments[1] instanceof Child) )\{\par
+            Object returnValue = invocation.proceed();\par
+            return returnValue;\par
+        \}\par
+        throw new Exception ("Arguments are of wrong type");\par
+    \}\par
+\}\par
+In the above code, the validation happens over the arguments to check whether they implement the right interface. It is important to make a call to MethodInvocation.proceed(), if we are happy with the arguments validation, else the target method will never gets invoked. \par
+5) Creating Point Cuts in Spring\par
+Point Cuts define where exactly the Advices have to be applied in various Join Points. Generally they act as Filters for the \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14application\'15 of various Advices into the real implementation. Spring defines two types of Point Cuts namely the Static and the Dynamic Point Cuts. The following section covers only about the Static Point Cuts as Dynamic Point Cuts are rarely used. \par
+5.1) The Point Cut Interface\par
+Point Cuts in Spring are represented by org.springframework.aop.Pointcut.Let us look into the various components of this interface. Looking at the interface definition will have something like the following, \par
+Pointcut.java \par
+public interface Pointcut\{\par
+\par
+    ClassFilter getClassFilter()\par
+    MethodMatcher getMethodMatcher() \par
+\}\par
+The getClassFilter() \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14method returns\'15 a ClassFilter object which determines whether the classObject argument passed to the matches() method should be considered for giving Advices. Following is a typical implementation of the ClassFilter interface. \par
+MyClassFilter.java \par
+public class MyClassFilter implements ClassFilter\{\par
+\par
+    public boolean matches(Class classObject)\{\par
+        String className = classObject.getName();\par
+        // Check whether the class objects should be advised based on their name.\par
+        if (shouldBeAdviced(className) )\{\par
+            return true;\par
+        \}\par
+        return false;\par
+    \}\par
+\}\tab\tab\tab\tab\par
+The next interface in consideration is the MethodMatcher which will filter whether various methods within the class should be given Advices. For example, consider the following code, \par
+MyMethodMatcher.java \par
+class MyMethodMatcher implements MethodMatcher\{\par
+\par
+    public boolean matches(Method m, Class targetClass)\{\par
+        String methodName = m.getName();\par
+        if (methodName.startsWith("get"))\{\par
+            return true;\par
+        \}\par
+        return false;\par
+    \}\par
+    public boolean isRuntime()\{\par
+        return false;\par
+    \}\par
+\par
+    public boolean matches(Method m, Class target, Object[] args);\par
+\par
+        // This method wont be called in our case. So, just return false.\par
+        return false;\par
+    \}\par
+\}\par
+In the above code, we have 3 methods defined inside in MethodMatcher interface. The isRuntime() method should return true when we want to go for Dynamic Point cut Inclusion by depending on the values of the arguments, which usually happens at run-time. In our case, we can return false, which means that matches(Method method, Class target, Object[] args) wont be called. The implementation of the 2 argument matches() method essentially says that we want only the getter methods to be advised. \par
+We have convenient concrete classes' implementation the Point Cut classes which are used to give advices to methods statically. They are \par
+NameMatchMethod Pointcut \par
+\'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14Regular Expression\'15 Pointcut \par
+5.2) NameMatchMethod Pointcut\par
+Here the name of the methods that are too be given advices can me directly mentioned in the \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-3.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14Configuration File\'15. A '*' represents that all the methods in the class should be given Advice. For example consider the following class, \par
+MyClass.java \par
+\tab\tab\tab\tab\par
+public class MyClass\{\par
+\par
+    public void method1()\{\}\par
+ \par
+    public void method2()\{\}\par
+\par
+    public void getMethod1()\par
+\par
+    public void getMethod2()\par
+\par
+\}\par
+\tab\tab\tab\tab\par
+Suppose we wish that only the methods getMethod1() and getMethod2() should be given Advice by some aspect. In that case, we can have the following Configuration file that achieves this, \par
+\tab\tab\tab\tab\par
+<bean id="getMethodsAdvisor" \par
+    class="org.springframework.aop.support.NameMatchMethodPointcutAdvisor">\par
+\par
+    <property name="mappedName">\par
+        <value>getMethod1<alue>\par
+    </property>\par
+</bean>\par
+\tab\tab\tab\tab\par
+The Expression get* tells that all method names starting with the method name get will be given Advices. If we want all the methods in the MyClass to be adviced, then the 'value' tag should be given '*' meaning all the methods in the Class. \par
+5.3) Regular Expression Pointcut\par
+This kind is used if you want to match the name of the methods in the Class based on Regular Expression. Spring distribution already comes with two supported flavors of Regular Expression namely Perl Regular Expression (represented by org.springframework.aop.support.Perl5RegexpMethodPointcut) and Jdk Regular Expression (represented by org.springframework.aop.support.JdkRegexpMethodPointcut). \par
+\par
+Considering the following class, \par
+\par
+MyClass.java \par
+\tab\tab\tab\tab\par
+public class MyClass\{\par
+\par
+    public void method1()\{\}\par
+  \par
+    public void method11()\{\}\par
+ \par
+    public void method2()\{\}\par
+\par
+    public void getMethod1()\par
+\par
+    public void getMethod11()\par
+\par
+    public void getMethod2()\par
+\}\par
+\tab\tab\tab\tab\par
+\par
+The Expression 'm*1' matches method1() and method11(), 'getMethod.' matches only getMethod1() and getMethod2(). The Configuration File should be populated with the following information for gaining this kind of support. \par
+\par
+\par
+<bean id="regExpAdvisor"\par
+    class="org.springframework.aop.support.RegExpPointcutAdvisor">\par
+\par
+    <property name="pattern">\par
+        <value>m*1<value>\par
+    </property>\par
+\par
+</bean>\tab\tab\tab\par
+6) Sample \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14Application\'15\par
+6.1) Introduction\par
+Let is illustrate the various types of Advices (Before Advice, After Advice, Throws Advice and Around Advice) that we saw before in this sample Application. For this sample application let us define Adder Service which provides logic for adding two numbers. The various classes involved in Application along with the Advices in the subsequent sections. \par
+6.2) Addder.java\par
+This is the interface definition for the Add Service. The interface name is Adder and it has one single \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14method called\'15 add() taking two arguments both of type int. \par
+Adder.java \par
+\tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+public interface Adder \{\par
+\par
+    public int add(int a,int b);\par
+\par
+\}\par
+\tab\tab\tab\tab\par
+6.3) AdderImpl.java\par
+The implementation class for the Add Service. The logic is as simple as it returns the summation of the two numbers given as arguments. Note that, in the later section we will see how Advices get bound with this Implementation Class. \par
+AdderImpl.java \par
+\tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+public class AdderImpl implements Adder \{\par
+\par
+    public int add(int a, int b)\{\par
+        return a+b;\par
+    \}\par
+\par
+\}\par
+\tab\tab\tab\tab\par
+6.4) Before Advice Implementation\par
+This is the Before Advice for the Adder Implmentation class. This class implements the before() method in the MethodBeforeAdvice interface by simply outputting a message telling that this advice is called. \par
+LogBeforeCallAdvice.java \par
+\tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+import \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14java\'15.lang.reflect.Method;\par
+import org.springframework.aop.MethodBeforeAdvice;\par
+\par
+public class LogBeforeCallAdvice implements MethodBeforeAdvice\{\par
+\par
+    public void before(Method method, Object[] args, Object target) \{\par
+        \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14System\'15.out.println("Before Calling the Method");\par
+    \}\par
+\}\par
+\tab\tab\tab\tab\par
+6.5) After Advice Implementation\par
+The After Method Call Advice implements the AfterReturningAdvice interface providing implementation for the afterReturning() method. Like the Before Advice implementation, this Advice also outputs a simple message to the console. \par
+LogAfterReturningAdvice.java \par
+\tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+import java.lang.reflect.Method;\par
+import org.springframework.aop.AfterReturningAdvice;\par
+\par
+public class LogAfterReturningAdvice implements AfterReturningAdvice\{    \par
+\par
+    public void afterReturning(Object returnValue, Method method, Object[] args, \par
+    Object target) throws Throwable \{\par
+\par
+        System.out.println("After Normal Return from Method");\par
+    \}\par
+\par
+\}\par
+\tab\tab\tab\tab\par
+6.6) Throws Advice Implementation\par
+This Advice will be called when some kind of Exception is caught during the method invocation. We have added a simple logic to simlate the exception when the user inputs are 0 and 0. \par
+\par
+\par
+LogAfterThrowsAdvice.java \par
+\tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+import java.lang.reflect.Method;\par
+import org.springframework.aop.ThrowsAdvice;\par
+\par
+public class LogAfterThrowsAdvice implements ThrowsAdvice\{\par
+\par
+    public void afterThrowing(Method method, Object[] args, Object target, \par
+    Exception exception)\{        \par
+        System.out.println("Exception is thrown on method " + method.getName());\par
+    \}    \par
+\}\par
+\tab\tab\tab\tab\par
+6.7) Around Advice Implementation\par
+This Advice takes the entire control during the Method Execution. It decides whether the add() method should be called or not based on the user inputs. Note that, only if the user inputs are not 0 and 0, then the add() method will be called through MethodInvocation.proceed(). \par
+LogAroundAdvice.java \tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+import org.aopalliance.intercept.*;\par
+\par
+public class LogAroundAdvice implements MethodInterceptor\{\par
+\par
+    public Object invoke(MethodInvocation methodInvocation) throws Throwable \{\par
+\par
+        Object arguments[] = methodInvocation.getArguments();\par
+        int number1 = ((Integer)arguments[0]).intValue();\par
+        int number2 = ((Integer)arguments[1]).intValue();\par
+\par
+        if (number1 == 0 && number2 == 0)\{\par
+            throw new Exception("Dont know how to add 0 and 0!!!");\par
+        \}\par
+        return methodInvocation.proceed();\par
+    \}\par
+\}\tab\tab\tab\par
+6.8) \'13 HYPERLINK "{{\field{\*\fldinst{HYPERLINK http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html }}{\fldrslt{http://www.javabeat.net/articles/51-introduction-to-springs-aspect-oriented-programminga-4.html\ul0\cf0}}}}\f2\fs22 " \\t "_top" \'14Configuration File\'15\par
+The Configuration File has 3 sections. One section is the Advice Bean Definition Section which is the definition set for all the 4 advices which we saw before. All the advices are given identifiers like 'beforeCall', 'afterCall', 'throwCall' and 'aroundCall'. Then contains the Bean Definition for the Add implementation class which is giving the identifier 'adderImpl'. \par
+The next interesting section is how to bind these advices to the implementation code. For this, we have to depend on ProxyFactory Bean. This Bean is used to create Proxy objects for the Add Implementation class along with the Advice implementation. Note that the property 'proxyInterfaces' contains the Interface Name for which the proxy class has to ge generated. In our case, it is going to be the Adder interface. The 'interceptorNames' property takes a list of Advices to be applied to the dynamically generated proxy class. We have given all the 4 advices to this property. Finally the implementation class for the Adder service is given in the 'target' property. \par
+aop-test.xml \tab\tab\tab\tab\par
+<beans xmlns="http://www.springframework.org/schema/beans"\par
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"\par
+    xsi:schemaLocation="http://www.springframework.org/schema/beans \line     {{\field{\*\fldinst{HYPERLINK http://www.springframework.org/schema/beans/spring-beans-2.0.xsd }}{\fldrslt{http://www.springframework.org/schema/beans/spring-beans-2.0.xsd\ul0\cf0}}}}\f2\fs22 ">\par
+\par
+    <!-- Advices -->    \par
+    <bean id = "beforeCall"     class="net.javabeat.spring.aop.introduction.test.LogBeforeCallAdvice"/>\par
+\par
+    <bean id = "afterCall" class = "net.javabeat.spring.aop.introduction.test.LogAfterReturningAdvice" />\par
+\par
+    <bean id = "throwCall"  class = "net.javabeat.spring.aop.introduction.test.LogAfterThrowsAdvice" />\par
+\par
+    <bean id = "aroundCall" \par
+    class = "net.javabeat.spring.aop.introduction.test.LogAroundAdvice" />\par
+\par
+    <!-- Implementation Class -->\par
+    <bean id = "adderImpl" \par
+    class = "net.javabeat.spring.aop.introduction.test.AdderImpl" />    \par
+\par
+    <!-- Proxy Implementation Class -->\par
+    <bean id = "adder"\par
+    class = "org.springframework.aop.framework.ProxyFactoryBean">\par
+\par
+        <property name = "proxyInterfaces">\par
+            <value>net.javabeat.spring.aop.introduction.test.Adder</value>\par
+        </property>\par
+\par
+        <property name = "interceptorNames">\par
+            <list>\par
+                <value>beforeCall</value>\par
+                <value>afterCall</value>\par
+                <value>throwCall</value>\par
+                <value>aroundCall</value>\par
+            </list> \par
+        </property>\par
+\par
+        <property name = "target">    \par
+            <ref bean = "adderImpl"/>\par
+        </property>    \par
+    </bean>      \par
+\par
+</beans>\par
+\tab\tab\tab\tab\par
+6.9) Test Class\par
+Following is the test class for the Adder Service. The code loads the Bean Definition File by depending on the BeanFactory class. Watch carefully in the output for the various Advices getting called. Also, we have made to activate the Simulated Exception by passing 0 and 0 as arguments to the add() method call thereby making use of the Throws Advice. \par
+AdderTest.java \tab\tab\tab\tab\par
+package net.javabeat.spring.aop.introduction.test;\par
+\par
+import org.springframework.beans.factory.BeanFactory;\par
+import org.springframework.beans.factory.xml.XmlBeanFactory;\par
+import org.springframework.core.io.*;\par
+\par
+public class AdderTest \{\par
+\par
+    public static void main(String args[])\{\par
+\par
+        Resource resource = new FileSystemResource("./src/aop-test.xml");\par
+        BeanFactory factory = new XmlBeanFactory(resource);        \par
+        Adder adder = (Adder)factory.getBean("adder");\par
+        int result = adder.add(10,10);\par
+        System.out.println("Result = " + result);\par
+\par
+        result = adder.add(0,0);\par
+        System.out.println("Result = " + result);        \par
+    \}\par
+\}\par
+\tab\tab\tab\tab\par
+7) Conclusion\par
+This article provided information on how to use Spring AOP for programming the Aspects in an Application. It started with defining what Aspects are and what are problems in having the Aspects directly embedded into the Application and how to separate them using AOP. It then looked briefly into the various AOP Terminologies like Advice, Point Cut, Join Points etc. Then it moved on into the various support for creating Advices using Spring AOP. Also covered in brief are the Static Point Cuts like Name Method Match and Regular Expression Point Cuts. Finally the article concluded with a Sample Application that illustrates the usage of different Advices. \par
+\par
+\par
+\par
+\par
+\tab\'08\line\'08\f0\'e0\'08\tab\tab\tab\tab\tab\tab\par
+\par
+\par
+\par
+\par
+\par
+\f1\u402?u\u402?g\u402?g\u402?g\u402?V\u402?g\u402?\f0\'f1D\'f1\par
+\'08\line\'08\tab\tab\par
+\par
+\par
+\line\line\line\line\line\lquote\line\line\line\line\line\page\page\page\line\'0f\~\'17\'df\~\'17\'df\~\'17\'df\'84\'d0\'02\'11\'84\'d0\'02^\'84\'d0\'02`\'84\'d0\'02a$\'03gd\'12\'14\'06\~\'17\'df\par
+\par
+\line\line\line\line\line\line\line\'87\f2\page\page\page\f1\u338?\page\f0\'00?\'8d\page\'00?\'8e\page\'00?\'8f\page\'00?\'90\page\'00?\'af\page\page\page\page\tab\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\rquote\'a1\'81\'a1\rquote\'a1\rquote\'a1\rquote\'a1\rquote\'a1r`\'a1\rquote\page\f1\u402?\page\f0\'00?\'8b\f2\page\f0\'90\page\'86\'0e\'b2\'0e\line\'0f\~\'17\'df\line\'0f\'87\'10\f2\lquote\'10\f0\'af\'10\f1\'8e\'12\f0\'00?\'8f\'12\'00?\'bf\'12\rquote\'13\tab\'14\~\'17\'df\line\'0f\par
+\'12\f1\u338?\'18\f0\'00?\'8f\'19\'00?\-\'19\f1\u339?\u338?\f0\'e4\{\'e4j\'e4\'c0\'e4\'c0\'e4\'c0\'e4\'d5[\'d5\rdblquote\'15\f1\u402?\'16\f0\'00?\f2\bullet\'16\f0\'a3\'16\-\'19\~\'17\'df\~\'17\'df\line\'0f\-\'19\f1\'8e\'1b\f0\'b6\'1b\~\'17\'df\~\'17\'df\line\'0f\~\'17\'df\-\'1c\f1\u402?\'1d\f0\'00?\'8d\'1d\'00?\'b9\'1d\'8b&\f2\endash &\f0\'b4&\'8b"\'a4"\rquote $\~$\~\'17\'df\~\'17\'df\~\'17\'df\line\'0f\'8b'\f1\'9e'\f0\'ba'\page -\rdblquote\'c0\'85\'c0\rdblquote\'c0\rdblquote\'c0\rdblquote\'c0\'cdx\'f1\'dc\'f1\'dc\'f1\'dc\'f1\'dc\'f1g\'f1\'9b)\'d3)\line\'0f\~\'17\'df\par
+,\line ,\~,\f1\u338?.\f0\'00?)/\'00?G/\'00?\'1d1\'00?,1\'00?:1\'00?I1\'00?X1\'00?l1\'00?\'d83\par
+&\line F\'01\~\'17\'df\~\'17\'df\~\'17\'df\~\'17\'df\line\'0f\f1\u402?.\f0\'00?\'89.\f1\u338?.\f0\'00?\'01/\'00?\'1c/\'00?)/\'00?G/\'00?`/\'00?f/\'00?\f2\emdash /\f0\'9d/\'9b\'86\'9b\'86\'9bs\'9bs\\s\'9b\'86\'9b,\'15h\'90;\'a2\page\'06\line 2\lquote\'a8\'dc\'a8\'dc\'a8\lquote\'a8\'dcm\'dc`QD`\rquote 7\line\'0f\page\'06\~\'17\'df\line\'0f\line 5\'845\'fc5\~6\rdblquote\'85s\'f1\'cd\'ba\'cd\'bad\'ba\'cdY\'f1\tab ;\f1\u339?;\f0\'00?\'c1;\f1\'9aA\f0\'f7\line\'0f\page\'06\line\'0f\~\'17\'df\~\'17\'df\tab ;\par
+<\lquote\'a8\'cb\'da\'cb\'cbpcX\'cbp\'cb\'a8\'cb\'a8\lquote\'a8\'cbp\'cb\'ef\'cb\'da\f1\'9e>\f0\'ab>\f1\'9aA\f0\-A\-\~\f2\bullet\f0\'f1\f1\u402?\f0\'f1\-\f2\bullet\f0\'f1\-\'f1r\'f1\-\'f1\'bc\'f1_\'f1_\f1\'9aA\f0\-A\par
+D\'86G\'a6G\line\'0f\page\'06\line\'0f\~\'17\'df\~\'17\'df\par
+D\'88E\f2\bullet E\f0\'f5E\'89H\'a3H\ldblquote I\f1\'9aI\f0\'a3I\f1\u338?J\f0\'00?\rquote J\'9bJ\-J\f1\u339?\f0\'c7\'87\'c7\'ab\'c7u\'c7\'ab\'ba\'c7\'ab\'c7d\'87\'c7\'87\'c7\'87\'c7\'d6\'c7\'d6\'e9\'d6\'c7\'87\'c7\'87\'c7\'87\'c7d\'87\'90;\'a2\page\'06\rquote N\line\'0f\page\'06\line\'0f\f1\'8a\f0\~\'17\'df\~\'17\'df\~\'17\'df\'8bL\f1\u338?L\f0\'00?\'8dL\'00?\'04M\'00?\'05M\'00?\'13M\'00?\'14M\'00?\'17M\'00?"M\'00?jM\'00?sM\'00?\'9bM\'a2M\'8bO\'d7O\line P\f1\'8a\f0\line P\'8bP\'b4P\f1\'9eQ\f0\'00?\f1\u376?Q\f0\'00?\'e9Q\'9bT\'f7\par
+&\line F\'02\~\'17\'df\line\'0f\~\'17\'df\~S\'9bT\f1\u339?T\f0\'00?\'13U\'00?\'14U\'00?&U\'00?'U\'00?2U\'00?PU\'00?\'acU\-UW\f1\u402?X\f0\'00?\'a4X\~\'17\'df\line\'0f\~\'17\'df\f1\'8aW\f0\'00?\'8fW\'00?\'9bW\'acW\f1\u338?Y\f0\'00?\ldblquote Y\'a8Y\'84\\\f1\'8a\\\f0\'8b\\\'f3\'e6\'d7\'c8\'d7\'c8\'d7\'b3\'d7\'e6\'c8\'f3\'e6\'d7\'c8\'d7\'c8\'d7\'b3\'d7\'c8\'d7\'c8\'d7\'a2\'d7\'b3\'d7\'b3\'d7\'c8\'d7\'b3\'d7\'c8\'d7\f2\endash\f0\'d7\'87u\'d7\'e6\'c8\'f3\'e6\f2\endash "\'15h\f0\'90;\'a2\par
+\\\page\\\~\'17\'df\~\'17\'df\~\'17\'df\line\'0f\f1\u402?\\\f0\'00?\'85\\\'00?\'8a\\\'00?\'8b\\\f1\u402?]\f0\'00?\'c6]\~\'17\'df\~\'17\'df\~\'17\'df\~\'17\'df\line\'0f\'8b\\\f1\'9a\\\f0\'00?\f1\u376?\\\f0\'00?\'a8\\\f1\'9e^\f0\'a9^\par
+_\'98`\'f1\'e2\'f1\'e2\'f1\'e2\'f1\'e2\'f1\'e2\'f1\'e2\'f1\'cd\'f1\'e2\'c1\'e2\'b4\'a9\'98\f1\u402?\f0\'98\f1\u402?j\u402?\f0\'98\'f1\'cd\'f1\'cd\'f1\'cd\'f1\'cd\'f1\'98\'f1\'e2\'f1\'98`\'99`\'87c\'8dc\f2\endash\f0 d\f1\u339?d\f0\'00?\'d8d\'98\'b7\'8b\'98z\'dd\'a5\'dd\'98\'b7\'8b\'98z\'8b\'b7\'8b\'b7\'8b\'a5\'dd\'98\'b7g\'b7g\rquote a\ldblquote a\-a\'86c\'f0\~\'17\'df\line\'03\line\'0f\'86c\'8dc\'98d\'9dd\f1\u376?e\f0\'00?\~e\par
+h\~\'17\'df\~\'17\'df\line\'03\line\'0f\'84g\f2\endash g\f0\'a3g\line h\par
+h\'88j\f1\'8aj\f0\'f1\'de\'cf\'de\'cf\'de\'f1\'de\'cf\'c2\'b5\'a4\f2\bullet\f0\'cf\f2\bullet\f0\'cf\f2\bullet\f0\'80\f2\bullet n\bullet\f0\'b5\'cf\'c2\'b5\'a4\f2\bullet\f0\'cf\f2\bullet _P\f0\'d1 \'18\par
+h\f1\u339?h\f0\'00?\'9dh\'00?\'e7h\~i\'88j\f1\'8aj\f0\'a5j\~\'17\'df\~\'17\'df\line\'0f\f1\'8aj\f0\'a3j\'8bl\'b4l\f1\'8am\f0\'ceo\'89\'c3\'89\'a5oZoAo\page\'15h\'90;\'a2\'8bm\'bem\~\'17\'df\line\'03\line\'0f\rquote o\f1\u339?o\f0\'00?\'c7o\'88t\'c3t\'89u\f1\'8au\f0\'a3u\line v\page v\line\'0f\~\~\'17\'df\~\'17\'df\line\'0f\line\'0f\f1\'9ep\f0\'bcp\'87t\'a3u\rquote v\ldblquote v\'84\{\'8f\{\f2\bullet\{\endash\{\f0\'ab\{\f1\u339?\f0\'bc\f1\u339?\f0\'bc\f1\u339?\f0\'bc\'a8\lquote\'ef\'e0\'bc\'e0\'cb\'e0\'bc\'e0\'cb\'e0\'cb\'e0\'bc\'e0\'bc\'e0\'bc\'e0\'cb\page\'15h\'90;\'a2\'87w\'d0w\page y\'9by\'c5y\line\'0f\~\f1\'9e\}\f0\'d5\}\~\'17\'df\~\'17\'df\line\'0f\~\lquote ~\rquote ~\f2\emdash ~\f0\'a5~\par
+\'80\rdblquote\'80\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\'9b\'f1\f1\u338?\f0\page\'15h\'90;\'a2\f1\'8a~\rquote ~\f2\emdash ~\f0\'a5~\~\'17\'df\~\'17\'df\~\'17\'df\~\'17\'df\~\'17\'df\line\'0f\~\par
+6\tab\~\'05$\'90\~\'05%\'b0\page\'90\'d0\'02\'86\'02\'14\f1\u339?\f0\page\'04\tab\'04sH\tab\'04tH\tab\'04R\page\tab\page\'04\tab\page\'04\tab\page\'05\page\'05\page\par
+\'03l\line\page\page\page\'88\f2\page\f0\'fe:J\par
+\'c62\rdblquote\'03( \'bc\par
+P\'0e\'e4\'11x\'15\page\'19\~\'1c4 \'c8#\\'\'f0*\'84.\'182\'ac5@9\page\tab\page\par
+\line\lquote\'03\f1\u402?\'04\f0\'00?\'8b\'04\'90\'04\'86\'06\'b2\'06\'87\'08\f2\lquote\'08\f0\'af\'08\par
+\par
+\par
+\par
+\f1\'8e\par
+\f0\'00?\'8f\par
+\'00?\'bf\par
+\line\line\line\line\rquote\line\line\line\tab\page\page\page\page\page\page\page\page\page\page\par
+\par
+\par
+\par
+\rdblquote\par
+\par
+\par
+\f1\u402?\'0e\f0\'00?\f2\bullet\'0e\f0\'a3\'0e\-\'11\f1\'8e\'13\f0\'b6\'13\'8b\'1a\'a4\'1a\rquote\'1c\~\'1c\'9b!\'d3!\par
+$\line $\~$\f1\u338?&\f0\'00?)'\'00?G'\'00?\'1d)\'00?,)\'00?:)\'00?I)\'00?X)\'00?l)\'00?\'d8+\rquote /\tab 3\f1\u339?3\f0\'00?\'c13\f1\'9a9\f0\-9\par
+<\'86?\'a6?\rquote F\line H\'8bH\'b4H\f1\'9eI\f0\'00?\f1\u376?I\f0\'00?\'e9I\'9bL\'b0N\f1\u402?P\f0\'00?\'a4P\par
+T\page T\f1\u402?T\f0\'00?\'85T\'00?\'8aT\'00?\'8bT\f1\u402?U\f0\'00?\'c6U\rquote Y\ldblquote Y\-Y\'86[\'8d[\'98\\\'9d\\\f1\u376?]\f0\'00?\~]\par
+`\f1\u339?`\f0\'00?\'9d`\'00?\'e7`\~a\'88b\f1\'8ab\f0\'a5b\'8be\'bee\rquote g\f1\u339?g\f0\'00?\'c7g\'88l\'c3l\'89m\f1\'8am\f0\'a3m\line n\page n\'87o\'d0o\page q\'9bq\'c5q\f1\'9eu\f0\'d5u\f1\'8av\rquote v\f2\emdash v\f0\'a5v\'98\'80\'98\'80\'98\'80\'98\'80\f1\u376?\'01\f0\'00?\'00?\'00?\'00?\'00?\'00?\'98\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98@\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98@\'80\'98@\'80\'98@\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\f1\u376?\'01\f0\'00?\'00?\'00?\'00?\'00?\'00?\'98\'80\f1\u376?\'01\f0\'00?\'00?\'00?\'00?\'00?\'00?\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\f1\u376?\'01\f0\'00?\'00?\'00?\'00?\'00?\'00?(\'00?\'00\'030\'00?\'00?\'00?\'00\'80&\'98\'80\'87\'11\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'87\'11\'80\'98\'80\'bd\'17\'98\'80\'a3\'18\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'e9\'1a\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'ec\'1e\'98\'80\'ec\'1e\'98\'80\'ec\'1e\'98\'80\'ec\'1e\'98\'80\'ec\'1e\'98\'80\'ec\'1e\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'ec\'1e\'98\'80\'ec\'1e\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'ec\'1e\'98\'80\'98\'80\'98\'80''\'98\'80''\'98\'80''\'98\'80''\'98\'80''\'98\'80V)\'98\'80V)\'98\'80V)\'98\'80V)\'98\'80V)\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80V)\'98\'80V)\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80V)\'98\'80\'c80\'98\'80\'c80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'c80\'98\'80J5\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80J5\'98\'80J5\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80J5\'98\'80\f1\u376?9\f0\'00?\'00?\'00?\'00?\'00?\'00?\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\f1\u376?9\f0\'00?\'00?\'00?\'00?\'00?\'00?\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\f1\u376?9\f0\'00?\'00?\'00?\'00?\'00?\'00?\'18\'00?\'00\'020\'00?\'00?\'00?\'00\'80\'98\'80\par
+A\'98\'80\'98\'80\'1aC\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'1aC\'98\'80\'1aC\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'1aC\'98\'80\'1aC\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'1aC\'98\'80\'1aC\'98\'80\'1aC\'98\'80\'1aC\par
+A\'98\'80\'98\'80\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80AM\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\'98\'80\lquote\'03\f1\u402?\'04\f0\'00?\'8b\'04\'90\'04\'86\'06\'b2\'06\'87\'08\f2\lquote\'08\f0\'af\'08\par
+\par
+\par
+\par
+\f1\'8e\par
+\f0\'00?\'8f\par
+\'00?\'bf\par
+\line\line\line\line\rquote\line\line\line\tab\page\page\page\page\page\page\page\page\page\page\par
+\par
+\par
+\par
+\rdblquote\par
+\par
+\par
+\f1\u402?\'0e\f0\'00?\f2\bullet\'0e\f0\'a3\'0e\-\'11\f1\'8e\'13\f0\'b6\'13\'8b\'1a\'a4\'1a\rquote\'1c\~\'1c\'9b!\'d3!\par
+$\line $\~$\rquote v\f2\emdash v\f0\'a5v\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80 \'02\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80/\'04\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\'bd\'01\f1\'9a@\f0\'80\'bd\'01\f1\'9a@\f0\'80\'b5\'02\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\f1\'9a@\f0\'80\tab 0\par
+\tab\'10\tab\'10\f1\'9a@\f0\'80\par
+@\par
+\'8b\\\f1\'8aj\f0\'e4\{\page\-\'19\f1\'9aA\f0\'a4X\'86c\f2\par
+h\f0\'ddj\'84-\'fc-\f1\u338?D\f0\'00?\'04E\'00?\'13E\'00?\'9bL\'acM\'98X\'d8\\\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\'13X\'14\f0\'ff\'15\f1\u338?\f0\'ff\'ff\'01\rdblquote\'02\f1\u402?a\f0\'00?>y\'00?\'00?\'00?\'01\'00\'89a\'80urn:schemas-microsoft-com:office:smarttags\'05\'80place\page\tab\'02\f1\u402?\'03\f0\'00?\'86\'03\'8f\'03\~\'03\-\'03\tab\'04\par
+\'04\tab\'05\ldblquote\'06\f2\emdash\'06\f1\'9a\'06\f0\'a4\'06\line  \ldblquote  \~\'08\-\'08\par
+\par
+\par
+\'89\f2\par
+\emdash\par
+\f0\'a2\par
+\par
+\par
+\par
+\par
+\par
+\par
+\line\line\line\line\line\line\line\line\line\line\f1\u402?\line\f0\'00?\f1\u338?\line\f0\'00?\'a2\line\line\line\line\line\line\line\line\line\line\page\page\page\page\page\page\'86\f2\page\lquote\page\f0\'bb\page\page\page\par
+\page\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\f1\'8e\par
+\f0\'b2\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\par
+\'0f\f1\'8a\'0f\f0\'00?\'8d\'0f\'00?T\'17\'00?d\'17\'00?\'8d\'18\'00?\rdblquote\'18\'00?\'05\'1a\'00?\'16\'1a\'00?\'17\'1a\'00?#\'1a\'00??\'1a\'00?J\'1a\'00?\'8f\'1a\'00?\~\'1a\f1\u338?\'1b\f0\'00?\'a1\'1b\'8b\'1f\f2\ldblquote\'1f\f0\'f9 \line *\'89,\'a1,\line -\'843\f1\'8a3\f2\bullet 3\f0\'993\par
+4\f1\'8a8\rdblquote 8\f0\~8\ldblquote >\'89@\'a1@\'89D\'d1E\par
+F\f1\'8eF\f0\'f0F\tab G\'8bG\f2\line\f0 H\f1\'9aH\f0\'a4H\f2\emdash\f0 I\'81L\lquote L\f2\emdash P\f0\'a1P\f1\'8eU\f0\'c3U\f2\endash\\\f0\'a5\\\-]\line `\f1\'9a`\f0\'aa`\f1\'8ab\f0\'a3b\'86c\f1\'8ec\rdblquote c\f0\'00?\f1\u376?c\f0\'00?\'a3c\ldblquote e\page f\f1\'8ek\f0\'00?vl\'00?\'82l\'00?\'8fl\'00?\rdblquote l\'c7l\'87n\'90n\f1\u339?n\f0\'00?\'dan\par
+o\'84o\f2\rdblquote o\f0\'c7o\rquote p\tab q\'89q\f2\rquote q\f0\'b2q\~t\par
+u\f1\'8au\f0\'acu  \-\'01\f1\u402?\'03\f0\'00?\'99\'03\f1\u376?\'03\f0\'00?\'ba\'03\tab\'05\rquote\'05\f1\'9a\'06\f0\'a5\'06\f1\u376?\'08\f0\'00?\'c4\'08\par
+\par
+\par
+\par
+\f2\emdash\par
+\f0\'a3\par
+\par
+\par
+\line\line\line\line\line\line\line\line\line\line\line\line\page\page\page\page\page\page\'86\f2\page\rquote\page\f0\'b4\page\page\page\page\page\par
+\par
+\par
+\par
+\par
+\par
+\f1\u339?\par
+\f0\'00?\~\par
+\par
+\par
+\par
+\par
+\line\'0f\rdblquote\'11\f2\emdash\'11\f0\'e0\'13\'86\'1b\'fa\'1b\f2\endash\'1c\f1\'9e\'1c\f0\'ab\'1c\lquote !\-!\'87$\'aa(\f1\u402?/\f0\'00?\'9d/\'00?\'a2/\tab 3\par
+4\f1\u402?8\f0\'00?\'b38\'84>\'e2>\f1\u402??\f0\'00?\rquote ?\'98?\'b8?\'89@\'a2@\f1\'8aD\f0\'fdE\par
+I\~K\'84N\'c3N\'89O\-P\'87U\f1\u338?U\f0\'00?\'eeU\ldblquote Y\par
+\\\~]\f1\u402?_\f0\'00?\'12`\'00?\'19`\'00?F`\'00?L`\'00?g`\'00?m`\'00?\'9d`\'00?\'a3`\'8be\f2\rquote e\f0\'bfe\'89f\'b6f\f1\'8em\rquote m\f0\'98n\'90o\f1\u402?q\f0\'00?\'89q\'acq\'8bu\'bau \f1\'9a9\f0\'ec?\f1\'8aH\f0\'afN\f1\'8aT\f0\'8bT\'df^\'88b\f1\'8ab\f0\'d6c\'86e\'ceg\f1\u402?l\f0\'00?\f1\u402?l\f0\'00?m\'00?m\'00?\'80m\rquote n\ldblquote n\tab\'ac?t\'e0\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\f1\'9e6\f0\'84\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'ff\'0f\'84\'d0\'02\'11\'84\'98\'fe\'15\'c6\'05\'84\'d0\'02`\'84\'98\'feCJ\'14\'84\~\'05\'11\'84\'98\'fe\'15\'c6\'05\~\'05\'06^\'84\~\'05`\'84\'98\'feCJ\'14\'84p\'08\'11\'84\'98\'fe\'15\'c6\'05\'84p\'08`\'84\'98\'feCJ\'14\'84@\f2\line\f0\'11\'84\'98\'fe\'15\'c6\'05\line\'06^\'84@\f2\line\f0 `\'84\'98\'feCJ\'14\'84\'10\'0e\'11\'84\'98\'fe\'15\'c6\'05\'84\'10\'0e`\'84\'98\'feCJ\'14\'84\'e0\'10\'11\'84\'98\'fe\'15\'c6\'05\'84\'e0\'10`\'84\'98\'feCJ\'14\'84\'b0\'13\'11\'84\'98\'fe\'15\'c6\'05\'84\'b0\'13`\'84\'98\'feCJ\'14\'84\'80\'16\'11\'84\'98\'fe\'15\'c6\'05\'84\'80\'16`\'84\'98\'feCJ\'14\'84P\'19\'11\'84\'98\'fe\'15\'c6\'05\'84P\'19`\'84\'98\'feCJ\'14\'84\'d0\'02\'11\'84\'98\'fe\'15\'c6\'05\'84\'d0\'02`\'84\'98\'feCJ\'14\'84\~\'05\'11\'84\'98\'fe\'15\'c6\'05\~\'05\'06^\'84\~\'05`\'84\'98\'feCJ\'14\'84p\'08\'11\'84\'98\'fe\'15\'c6\'05\'84p\'08`\'84\'98\'feCJ\'14\'84@\f2\line\f0\'11\'84\'98\'fe\'15\'c6\'05\line\'06^\'84@\f2\line\f0 `\'84\'98\'feCJ\'14\'84\'10\'0e\'11\'84\'98\'fe\'15\'c6\'05\'84\'10\'0e`\'84\'98\'feCJ\'14\'84\'e0\'10\'11\'84\'98\'fe\'15\'c6\'05\'84\'e0\'10`\'84\'98\'feCJ\'14\'84\'b0\'13\'11\'84\'98\'fe\'15\'c6\'05\'84\'b0\'13`\'84\'98\'feCJ\'14\'84\'80\'16\'11\'84\'98\'fe\'15\'c6\'05\'84\'80\'16`\'84\'98\'feCJ\'14\'84P\'19\'11\'84\'98\'fe\'15\'c6\'05\'84P\'19`\'84\'98\'feCJ\'14\tab\'87\'06\f2\par
+\'17\f0\'e2\'0e\f1\u402?)\'03,\f0\'00?\'00?\'00?\'00?\'00\'01\'02\'00\'02\'00\'c1\'11\f1\'8e,\f0\'fd5\line ^wV\f1\u339?\'06\f0\'b8^\page +!n\page\'06\'98e\f2\par
+\f0\'da\'06\'10\par
+)\par
+S?\f1\'8a\f0\~\~\'17\'df\line\'fc\'87z\'80\'08\line\'06\'04\'02\'02\'02\'02\'02\'04\'87z\'80\'08\line\'06\'04\'03\'05\'04\'04\'02\'04\'87\'02\f1\u376?\'01\f0\'00?\'00?\'00?V\'00e\'00r\'00d\'00a\'00n\'00a\'00?\'00?5\'90\'01\'00?\'02 \'03\tab\'02\'02\'05\'02\'04\'04\'87z\'80\'08\'88\'18\'f0\'d0\'02\f1\u339?\f0\'d8f\'c0\f1\u339?\f0\'e8\'86\f2\page\par
+\f0\'dc\~\'05\'b4\f1\u402?\'11\f0\'00\'f0\'10\page\page\f1\u376?\f0\'f2\'f9Oh\'10\'ab\lquote\'08\'98\'a8\tab\par
+\page\par
+\f1\'8e\f0\'ea\'d0\'01\f1\u376?\f0\'a2?\'cb\'01\'03\f1\u339?.\'1b\'10\ldblquote\f2\emdash\'08\f0\'f9\'aeD\f1\u339?.\'1b\'10\ldblquote\f2\emdash\'08\f0\'f9\'ae4\'01\page\'84\f1\u338?\f0\rdblquote\line\f1\u339?\f0\par
+\page\line\line\line\line\line\page\'10\page\page\tab\tab\par
+\line\page\par
+\f1\u402?\f0\'84\f1\'8a\f0\'8b\f1\u338?\'8e\f0\lquote\rquote\ldblquote\rdblquote\f2\bullet\endash\emdash\f0\'99\f1\'9a\f0\'9b\f1\u339?\'9e\u376?\f0\~\-\tab\'02\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'ff\'01\par
+\tab\'02\par
+\par
+
+\pard\sa200\sl276\slmult1\f3\lang9\par
+}
+ 
