@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ns2:bookStore xmlns:ns2="com.tutorial.jaxb.test">
+    <bookList>
+        <author>James Goslindfgdf</author>
+        <title>Core Java2</title>
+        <publisher>Exce2333l</publisher>
+        <isbn>909-8876548</isbn>
+    </bookList>
+    <bookList/>
+    <bookList>
+        <author>Charles Don</author>
+        <title>Dot Net</title>
+        <publisher>Oreilly</publisher>
+        <isbn>674-9829475</isbn>
+    </bookList>
+    <location>Concord</location>
+    <name>Excel Store</name>
+</ns2:bookStore>
