@@ -53,5 +53,9 @@
 			<td>${employee.secretValue}</td>
 		</tr>
 	</table>
+	
+	<ul>
+	<li><a href="logout.htm">Logout page</a></li>
+	</ul>
 </body>
 </html>

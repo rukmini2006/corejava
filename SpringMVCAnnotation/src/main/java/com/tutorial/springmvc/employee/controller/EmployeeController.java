@@ -3,6 +3,7 @@ package com.tutorial.springmvc.employee.controller;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.support.SessionStatus;
 
+import com.tutorial.springmvc.employee.DAO.EmployeeDao;
 import com.tutorial.springmvc.employee.model.Employee;
+import com.tutorial.springmvc.employee.service.EmployeeService;
+import com.tutorial.springmvc.employee.service.EmployeeServiceImpl;
 import com.tutorial.springmvc.employee.validator.EmployeeValidator;
 
 @Controller
@@ -31,9 +35,11 @@ public class EmployeeController {
 	@Resource
 	EmployeeValidator employeeValidator;
 
-	/*@Resource
-	EmployeeService employeeService;*/
+	@Resource
+	EmployeeService employeeService;
 	
+	@Resource
+	EmployeeDao employeeDao;
 	public EmployeeController() {
 		System.out.println("Default Constructor");
 	}
@@ -81,14 +87,24 @@ public class EmployeeController {
 
 	@ModelAttribute("webFrameworkList")
 	public List<String> populateWebFrameworkList() {
+		System.out.println("HAAAAAAAAAAAAAA ");
+		EmployeeService service = new EmployeeServiceImpl();
+		System.out.println(" hjhfjdshfndsj");
+		Employee emp =  service.getEmployeeDetail(100);
+		System.out.println(emp.getUserName());
 		List<String> webFrameworkList = new ArrayList<String>();
+		webFrameworkList.add(emp.getUserName());
+		//webFrameworkList.add(emp.getF)
+		return webFrameworkList;
+		
+		/*List<String> webFrameworkList = new ArrayList<String>();
 		webFrameworkList.add("Spring MVC");
 		webFrameworkList.add("Struts 1");
 		webFrameworkList.add("Struts 2");
 		webFrameworkList.add("JSF");
 		webFrameworkList.add("Apache Wicket");
 
-		return webFrameworkList;
+		return webFrameworkList;*/
 	}
 
 	@InitBinder

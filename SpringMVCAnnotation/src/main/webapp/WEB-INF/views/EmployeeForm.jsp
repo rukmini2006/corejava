@@ -92,6 +92,10 @@
 				<td colspan="3"><input type="submit" /></td>
 			</tr>
 		</table>
+		<ul>
+		<li><a href="logout.htm">Logout page</a></li>
+		</ul>
+		
 	</form:form>
 
 </body>
